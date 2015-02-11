@@ -6,7 +6,7 @@ function rx = rxAlign(session,varargin)
 % on mrVista sessions.
 %
 % The argument can either be the path to a mrVista
-% session directory, or a view from an existing
+% session directory, or a view from an existing 
 % directory. If omitted, it assumes you're already
 % in the session directory and starts up a hidden
 % inplane view.
@@ -40,8 +40,8 @@ vANATOMYPATH = getVAnatomyPath(mrSESSION.subject);
 if ~isfield(inplane,'anat') || isempty(inplane.anat)
     inplane = loadAnat(inplane);
 end
-anat = viewGet(inplane,'Anatomy Data');
-ipVoxelSize = viewGet(inplane,'Voxel Size');
+anat = inplane.anat;
+ipVoxelSize = mrSESSION.inplanes.voxelSize;
 
 vol = double(vol);
 anat = double(anat);

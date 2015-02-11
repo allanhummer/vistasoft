@@ -1,9 +1,11 @@
-function rx = rxOpenRefFig(rx)
+function rx = rxOpenRefFig(rx);
 % rx = rxOpenRefFig(rx);
 %
 % Open a window for the reference volume.
 %
 % ras 02/05
+
+javaFigs = mrvJavaFeature;
 
 rx.ui.refFig = figure('Color','w',...
                       'Name','mrRx Reference Slice',...
@@ -41,4 +43,6 @@ cb = [cb(1:end-1) '([],1);'];
 set(rx.ui.refBright.editHandle,'Callback',cb);
 set(rx.ui.refContrast.editHandle,'Callback',cb);
        
+mrvJavaFeature(javaFigs);
+
 return

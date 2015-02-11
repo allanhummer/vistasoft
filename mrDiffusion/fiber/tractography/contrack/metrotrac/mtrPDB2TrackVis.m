@@ -3,7 +3,7 @@ function mtrPDB2TrackVis(volFile, trkExFile, pdbFile, trkFile)
 % PDB file is loaded in AcPc coordinates.
 
 % Load vol file to get AcPc xform
-vol = niftiRead(volFile);
+vol = readFileNifti(volFile);
 xformFrom = vol.qto_ijk;
 xformTo = abs(vol.qto_xyz);
 xformTo(1:3,4)=0;

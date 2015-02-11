@@ -133,7 +133,7 @@ for r = roiList
 
         if isfield(ui, 'flipLR') && ui.flipLR==1 && ori<3
             % L/R flip affects columns of axi + coronal, but not sag, orientations
-            dims = viewGet(vw,'Size');
+            dims = viewSize(vw);
             pts(2,:) = dims(3) - pts(2,:);
         end
         

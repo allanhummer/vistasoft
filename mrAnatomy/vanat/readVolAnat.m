@@ -74,9 +74,12 @@ if(strcmpi(fileFormat,'nifti'))
     end
     % Flip voxel order to conform the vAnatomy spec
     % NOTE: this assumes that the nifti data are in the cannonical axial
-    % orientation. If they might not be, call niftiAppyCannonicalXform.
+    % orientation. If they might not be, call niftiApplyCannonicalXform.
     % vAnatomy is [Z Y X] but the cannonical NFTI is [X Y Z], so we need to
     % permute the dims. We also need to flip Z and Y.
+    
+    %CORRECTED FOR OUR DATA
+    
     vData = mrAnatRotateAnalyze(vData);
 else
     % Load old vAnatomy format

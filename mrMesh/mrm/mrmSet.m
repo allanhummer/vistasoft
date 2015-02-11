@@ -1,36 +1,37 @@
 function [msh, ret] = mrmSet(msh,param,varargin)
-% General interface for communicating with mrMesh parameters.  
 %
 %   [msh, ret] = mrmSet(msh,param,varargin)
 %
-%  This routine keeps track of what we need to do to adjust different types
-%  of visual properties of the image.
+% Author; Wandell
+% Purpose:
+%    General interface for setting mrMesh view parameters.  This routine
+%    keeps track of what we need to do to adjust different types of
+%    visual properties of the image.
 %
-%  The routine tries to update the msh structure to keep it in synch with
-%  the display.  There may be bugs therein.
+%    The routine tries to update the msh structure to keep it in synch with
+%    the display.  There may be bugs therein.
 %
-%  The mesh structure contains parameters that include various important
-%  parameters.  These include the 
-%    * identity of the host computer running the mrMesh server (usually 'localhost')
-%    * the number of the mrMesh window (id)
-%    * the Actor (i.e., object) within the window
+%    The mesh structure contains parameters that include various important
+%    parameters.  These include 
+%      the the identity of the host computer running the mrMesh server (usually 'localhost')
+%      the number of the mrMesh window
+%      the Actor (i.e., object) within the window 
 %
-%  Actor values [0,31] are reserved with camera (0), cursor (1). 
-%  Meshes are assigned an actor value of 32 and above.
+%    Actor values [0,31] are reserved with camera (0), cursor (1). 
+%    New meshes are usually assigned an actor value of 32 and above.
 %
-%  The values in the mesh structure are accessed through the meshGet
-%  routine. The same mesh structure is used by mrMesh, mrGray and
-%  mrFlatMesh.  
+%    The values in the mesh structure are accessed through the meshGet routine.
+%    The same mesh structure is used by mrMesh, mrGray and mrFlatMesh.  Hence,
+%    the mesh routines are kept in the directory ...?
 %
-%  Some parameters require additional specification. These can be passed
-%  as additional arguments that are parsed by the varargin mechanism in
-%  Matlab.
+%    Some parameters require additional specification. These can be
+%    passed as additional arguments that are parsed by the varargin
+%    mechanism in Matlab. 
 %
 % See also:  mrmSet, mrMesh, meshGet, meshSet
 %
 % Examples:
 %     mrmSet(msh,'background',[.3,.3,.3,1]);
-%     mrmSet(msh,'addlight',ambient,diffuse,origin);
 %
 % Programming Notes:  (TODO List)
 %   * Query for the names and number of open mrMesh windows.
@@ -45,9 +46,6 @@ function [msh, ret] = mrmSet(msh,param,varargin)
 % turn it back on, as it no longer comes on when you click the mesh. I've
 % added a 'toggleCursor' command to make the GUI changes minimal (still
 % uses just one button).
-%
-% Started by Wandell many years ago
-%
 
 % Default parameters
 if ieNotDefined('msh'), error('You must specify a mesh.'); end
@@ -62,13 +60,11 @@ else
     windowID = meshGet(msh, 'windowid');
 end
 
-% Confirm that we have a host and windowID ready to go
 if isempty(host), host = 'localhost'; end
+
 if isempty(windowID), error('Mesh must specify a window'); end
 
-% Lower case and remove spaces
-param = mrvParamFormat(param);
-switch param
+switch lower(param)
     case {'close','closeone','closecurrent'}
         [tmp,foo,val] = mrMesh(host,windowID,'close');
         msh = meshSet(msh,'id',-1);
@@ -104,7 +100,6 @@ switch param
     case {'showlight'}
         % Sets up a light defined by the three parameters in window of the
         % msh.
-        
         % mrmSet(msh,'addlight',ambient,diffuse,origin);
         l.class = 'light';
         [id,stat,res] = mrMesh(host, windowID, 'add_actor', l);
@@ -342,29 +337,26 @@ switch param
         % mrmSet(msh,'smoothlarge',[smoothFactor = 3]);
         % RFD- we now fix the smoothing relaxation value and let the user
         % specify the number of iterations.
-        warning('Use smoothpatch, not mrmSet(msh,''smoothlarge'') to smooth meshes')
+        warning('Use meshSmooth, not mrmSet(msh,''smoothlarge'') to smooth meshes')
         return;
         
-        %         if isempty(varargin), sFactor = 3; else sFactor = varargin{1}; end
-        %         p.smooth_iterations = sFactor;
-        %         p.smooth_sinc_method = meshGet(msh,'smoothMethod');
-        %         if(p.smooth_sinc_method)
-        %             p.smooth_relaxation = 0.0001;
-        %         else
-        %             p.smooth_relaxation = 1.0;
-        %         end
-        %         p.actor = meshGet(msh,'actor');
-        %         [id,stat] = mrMesh(host, windowID, 'smooth', p);
-        %
+        if isempty(varargin), sFactor = 3; else sFactor = varargin{1}; end
+        p.smooth_iterations = sFactor;
+        p.smooth_sinc_method = meshGet(msh,'smoothMethod');
+        if(p.smooth_sinc_method)
+            p.smooth_relaxation = 0.0001;
+        else
+            p.smooth_relaxation = 1.0;
+        end
+        p.actor = meshGet(msh,'actor');
+        [id,stat] = mrMesh(host, windowID, 'smooth', p);
+        
     case {'decimate','decimatemesh'}
         % mrmSet(msh,'decimate_mesh');
-        warning('Use reducepatch, not mrmSet(msh,''smoothlarge'') to smooth meshes')
-        return;
+        p.decimate_reduction = meshGet(msh,'decimate_reduction');
+        p.actor = meshGet(msh,'actor');
+        [id,stat,res] = mrMesh(host, windowID, 'decimate', p);
         
-        %         p.decimate_reduction = meshGet(msh,'decimate_reduction');
-        %         p.actor = meshGet(msh,'actor');
-        %         [id,stat,res] = mrMesh(host, windowID, 'decimate', p);
-        %
     case {'curvature','curvatures'}
         % mrmSet(mesh,'curvature')
         % Shows the curvature shading and also attaches the values to the

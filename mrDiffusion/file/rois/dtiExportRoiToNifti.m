@@ -26,7 +26,7 @@ if(ischar(refImage))
    if(l<5||(~strcmpi(refImage(l-3:l),'.nii')&&~strcmpi(refImage(l-2:l),'.gz')))
       refImage = [refImage '.nii.gz'];
    end
-   ref = niftiRead(refImage);
+   ref = readFileNifti(refImage);
 end
 c = mrAnatXformCoords(ref.qto_ijk, roi.coords);
 c = round(c);

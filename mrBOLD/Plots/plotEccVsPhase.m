@@ -54,19 +54,20 @@ if notDefined('newfig'), newfig = 1; end
 if notDefined('colored'), colored = 0; end
 
 if notDefined('drawROI'), drawROI = 0; end
+curScan = getCurScan(vw);
 
-
-if isempty(viewGet(vw, 'ROIs')) || viewGet(vw, 'selected ROI') < 1
+if isempty(vw.ROIs) | vw.selectedROI < 1
 	error('No Selected ROI!');
 end
 	
 
 % Get selpts from current ROI
-ROIcoords = viewGet(vw, 'ROI coords');
+ROIcoords = getCurROIcoords(vw);
+ROIname = vw.ROIs(vw.selectedROI).name;
 
 % Get co and ph (vectors) for the current scan, within the
 % current ROI.
-I = viewGet(vw, 'ROI indices');
+I = roiIndices(vw, ROIcoords);
 model = viewGet(vw, 'rmmodel');
 model = model{1};
 co = rmGet(model, 'varexp');
@@ -78,7 +79,7 @@ ecc = ecc(I);
 
 % Remove NaNs from subCo and subAmp that may be there if ROI
 % includes volume voxels where there is no data.
-NaNs = find(isnan(co), 1);
+NaNs = find(isnan(co));
 if ~isempty(NaNs)
 %   myWarnDlg('ROI includes voxels that have no data.  These voxels are being ignored.');
   notNaNs = find(~isnan(co));
@@ -87,7 +88,7 @@ if ~isempty(NaNs)
   ecc = ecc(notNaNs);
 end
 
-cothresh = viewGet(vw, 'co thresh');
+cothresh = getCothresh(vw);
 eccthresh = max(viewGet(vw, 'mapclipmode')); 
 
 %% parse options

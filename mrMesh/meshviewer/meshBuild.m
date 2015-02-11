@@ -1,16 +1,17 @@
-function [vw,newMeshNum] = meshBuild(vw,hemisphere)
+function [view,newMeshNum] = meshBuild(view,hemisphere)
 % Build a 3D mesh for visualization and analysis
 %
-%   [vw,newMeshNum] = meshBuild(vw,[hemisphere]);
+%   [view,newMeshNum] = meshBuild(view,[hemisphere]);
 %
 %  Using mrVista data, build a mesh, save it in a file in the anatomy
 %  directory, and add the mesh to the 3D Control Window pull down
-%  options.  
+%  options.   
 %
-% vw:          A VISTASOFT view structure
-% hemisphere:  left, right or both.  Default: left
+%  A mrMesh window is opened as well, showing the computed mesh.
 %
-% A mrMesh window is opened as well, showing the computed mesh.
+%  Hemisphere options include 'left','right', and 'both'.  
+%    Default is 'left'.  
+%    !!!!(Problem with 'both' at present).
 %
 % Example:
 %    [VOLUME{1},newMeshNum] = meshBuild(VOLUME{1},'left');
@@ -23,44 +24,58 @@ function [vw,newMeshNum] = meshBuild(vw,hemisphere)
 %
 % (c) Stanford VISTA Team 2008
 
-% Programming TODO.  Check this!
-%   We have (or had?) trouble for building 'both' meshes.  We need a new
+% Programming TODO
+%   We have created trouble for building 'both' meshes.  We need a new
 %   procedure.
+%
 
 % Be sure anatomy is loaded (we need it for the mmPerVox field)
-if isempty(vw.anat), vw = loadAnat(vw); end
+if isempty(view.anat), view = loadAnat(view); end
 if ieNotDefined('hemisphere'), hemisphere = 'left'; end
+% if strcmp('hemisphere','both'), error('meshBuild does not run properly for hemi=both'); end
 
-newMeshNum = viewGet(vw,'nmesh') + 1;
+newMeshNum = viewGet(view,'nmesh') + 1;
 
 % Parameters we establish in this routine
 [meshName,numGrayLayers,hemiNum] = readParams(newMeshNum,hemisphere);
 if isempty(meshName), newMeshNum = newMeshNum - 1; return; end   % User pressed cancel.
 
-% mmPerVox = viewGet(vw,'mmPerVoxel');
+mmPerVox = viewGet(view,'mmPerVoxel');
 
 wbar = waitbar(0.1, ...
     sprintf('meshBuild: Combining white and gray matter...'));
 
 % Load left, right, or both hemispheres.  
 if (hemiNum==1)
-    [voxels,vw] = meshGetWhite(vw, 'left', numGrayLayers);
+    [voxels,view] = meshGetWhite(view, 'left', numGrayLayers);
 elseif (hemiNum==2)
-    [voxels,vw] = meshGetWhite(vw, 'right', numGrayLayers);
+    [voxels,view] = meshGetWhite(view, 'right', numGrayLayers);
 elseif (hemiNum == 0)
-    [voxels,vw] = meshGetWhite(vw, 'left', numGrayLayers);
-    [voxels,vw] = meshGetWhite(vw, 'right', numGrayLayers,voxels);
+    [voxels,view] = meshGetWhite(view, 'left', numGrayLayers);
+    [voxels,view] = meshGetWhite(view, 'right', numGrayLayers,voxels);
 end
 
-% host = 'localhost';
-% windowID = -1;
+host = 'localhost';
+windowID = -1;
 
 % We build a smoothed (mesh) and an unsmoothed mesh (tenseMesh) with these calls
 waitbar(0.35,wbar,sprintf('Building mesh'));
-[newMesh, tenseMesh] = mrmBuild(voxels,viewGet(vw,'mmPerVox'),1);
+
+% When mrmBuild calls work on Linux, eliminate the second condition.
+% if ispc
+    [newMesh, tenseMesh] = mrmBuild(voxels,viewGet(view,'mmPerVox'),1);
+% else
+%     [newMesh, lights, tenseMesh] = ...
+%         mrmBuildMesh(voxels, mmPerVox, host, windowID, ...
+%         'RelaxIterations', relaxIterations, ...
+%         'MeshName',meshName, ...
+%         'QueryFlag',1,...
+%         'SaveTenseMesh');
+%     newMesh = meshSet(newMesh,'lights',lights);
+% end
 
 % Must have a name
-newMesh   = meshSet(newMesh,'name',meshName);
+newMesh = meshSet(newMesh,'name',meshName);
 tenseMesh = meshSet(tenseMesh,'name',sprintf('%s-tense',meshName));
 
 % waitbar(0.65,wbar,sprintf('meshBuild: Unsmoothed mesh vertex to gray mapping'));
@@ -68,9 +83,9 @@ initVertices = meshGet(tenseMesh,'vertices');
 newMesh = meshSet(newMesh,'initialvertices',initVertices);
 vertexGrayMap = mrmMapVerticesToGray(...
     initVertices, ...
-    viewGet(vw,'nodes'), ...
-    viewGet(vw,'mmPerVox'),...
-    viewGet(vw,'edges'));
+    viewGet(view,'nodes'), ...
+    viewGet(view,'mmPerVox'),...
+    viewGet(view,'edges'));
 
 newMesh = meshSet(newMesh,'vertexGrayMap',vertexGrayMap);
 newMesh = meshSet(newMesh,'name',meshName);
@@ -86,25 +101,25 @@ pause(0.5);
 close(wbar);
 
 % Now refresh the UI
-vw = viewSet(vw,'add and select mesh',newMesh);
+view = viewSet(view,'addandselectmesh',newMesh);
 
 return;
 
 %---------------------------------------
-function classFile = verifyClassFile(vw,hemisphere)
+function classFile = verifyClassFile(view,hemisphere)
 
-classFile =  viewGet(vw,'classFileName',hemisphere);
-str = sprintf('Class %s',classFile);
+classFile =  viewGet(view,'classFileName',hemisphere);
+str = sprintf('Class %s',classFile)
 
 r=questdlg(str);   
 if ~strcmp(r,'Yes')
     switch hemisphere
         case 'left'
-            vw = viewSet(vw,'leftClassFileName',[]); 
+            view = viewSet(view,'leftClassFileName',[]); 
         case 'right'
-            vw = viewSet(vw,'rightClassFileName',[]); 
+            view = viewSet(view,'rightClassFileName',[]); 
     end
-    classFile =  viewGet(vw,'classFileName',hemisphere);
+    classFile =  viewGet(view,'classFileName',hemisphere);
 end
 
 return;
@@ -183,25 +198,25 @@ return;
 
 
 %---------------------------------
-function [voxels,vw] = meshGetWhite(vw, hemiName, numGrayLayers, voxels)
+function [voxels,view] = meshGetWhite(view, hemiName, numGrayLayers, voxels)
 %
 %
 %
 
-if ieNotDefined('vw'), error('You must send in a volume vw'); end
+if ieNotDefined('view'), error('You must send in a volume view'); end
 if ieNotDefined('hemiName'), error('You must define right,left or both'); end
 if ieNotDefined('numGrayLayers'), numGrayLayers = 0; end
 
-classFile = verifyClassFile(vw,hemiName);
+classFile = verifyClassFile(view,hemiName);
 if isempty(classFile),
     close(wbar); newMeshNum = -1;
     voxels = [];
     return;
 end
 classFileParam = [hemiName,'ClassFile'];
-vw       = viewSet(vw,classFileParam,classFile);
+view       = viewSet(view,classFileParam,classFile);
 
-classData = viewGet(vw,'classdata',hemiName);
+classData = viewGet(view,'classdata',hemiName);
 if ieNotDefined('voxels'),
     voxelsOld = uint8(zeros(classData.header.xsize, ...
         classData.header.ysize, ...

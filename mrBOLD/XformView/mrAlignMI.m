@@ -1,5 +1,5 @@
-function xform = mrAlignMI(sessionDir, vAnatFile, inplaneFile, initXFM, nuCorrect, forceSave)
-% function xform = mrAlignMI(sessionDir, vAnatFile, inplaneFile, initXFM, nuCorrect, forceSave)
+function xform = mrAlignMI(forceSave, sessionDir, vAnatFile, inplaneFile, initXFM, nuCorrect)
+% function xform = mrAlignMI(forceSave, sessionDir, vAnatFile, inplaneFile, initXFM, nuCorrect)
 %
 % * sessionDir is where the relevent mrSESSION lives. Defaults to pwd.
 %
@@ -50,7 +50,8 @@ if(~exist('sessionDir','var') || isempty(sessionDir))
     sessionDir = pwd;
 end
 if(~exist('forceSave','var') || isempty(forceSave))
-    forceSave = false;
+    %forceSave = false;
+    forceSave = true;
 end
 if (~exist('nuCorrect','var') || isempty(nuCorrect))
     nuCorrect = [];
@@ -99,12 +100,14 @@ disp(vAnatFile);
 useStartingEstimate = 0;
 if notDefined('initXFM'),
     if isfield(mrSESSION,'alignment'),
-        bn = questdlg(['mrSESSION.alignment exists. Do you want to to use ' ...
-            'it as a starting estimate?'],...
-            'starting estimate','Yes','No','No');
-        if strmatch(bn,'Yes'),
+        
+        %USE STARTING ESTIMATE AS DEFAULT
+        %bn = questdlg(['mrSESSION.alignment exists. Do you want to to use ' ...
+        %    'it as a starting estimate?'],...
+        %    'starting estimate','Yes','No','No');
+        %if strmatch(bn,'Yes'),
             useStartingEstimate = 1;
-        end;
+        %end;
     end;
 end;
 
@@ -124,13 +127,13 @@ ip = load(inplaneAnatFile);
 % For surface-coil data the results look better with correction - at
 % least for the subject I tested.
 if isempty(nuCorrect),
-    bn = questdlg('Do you want to correct for an intensity gradient?',...
-        'intensity gradient','Yes','No','No');
-    if strmatch(bn,'Yes'),
+    %bn = questdlg('Do you want to correct for an intensity gradient?',...
+    %    'intensity gradient','Yes','No','No');
+    %if strmatch(bn,'Yes'),
         nuCorrect = true;
-    else
-        nuCorrect = false;
-    end
+    %else
+    %    nuCorrect = false;
+    %end
 end
 if nuCorrect,
     [GradInt GradNoise]  = regEstFilIntGrad(ip.anat);
@@ -171,7 +174,8 @@ else
     % convention)
     % Careful! If you rerun you don't want to keep flipping your image
     % all the time
-    VG.mat(1,:) =  -VG.mat(1,:);
+    %CORRECTION
+    %VG.mat(1,:) =  -VG.mat(1,:);
     %VG.mat(2,:) =  -VG.mat(2,:);
     %VG.mat(3,:) =  -VG.mat(3,:);
     VG.mat

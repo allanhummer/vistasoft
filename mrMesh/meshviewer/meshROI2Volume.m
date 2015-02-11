@@ -28,8 +28,9 @@ if notDefined('vw'), vw = getSelectedVolume; end
 
 if(ieNotDefined('mapMethod')), mapMethod = 3; end
 if(ieNotDefined('computeArea')), computeArea = true; end
+vw
+msh = viewGet(vw,'currentmesh')
 
-msh = viewGet(vw,'currentmesh');
 mrmRoi = mrmGet(msh,'curRoi');
 
 if(~isfield(mrmRoi,'vertices')), error('No mrm ROI!'); end

@@ -17,7 +17,7 @@ if ~exist('niftiFile','var')
         if(isnumeric(f)); disp('User canceled.'); return; end
 end
 
-ni = niftiRead(niftiFile);
+ni = readFileNifti(niftiFile);
 disp('Fixing dcm2nii xForm...');
 ni = niftiSetQto(ni,ni.sto_xyz);
 

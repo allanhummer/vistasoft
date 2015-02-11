@@ -141,6 +141,7 @@ if ~exist(imFile, 'file')
     [pth, fname ext] = fileparts(imFile);
     imFile = fullfile('Stimuli', [fname ext]);
 end
+
 I = load(imFile);
 % TODO: make compatible with RGB images (now assumes grayscale)
 

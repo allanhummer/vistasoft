@@ -32,7 +32,7 @@ if(~exist('roi','var') || isempty(roi))
 end
 
 % Read in the nifti file
-roi = niftiRead(roi);
+roi = readFileNifti(roi);
 mmPerVoxel = roi.pixdim; % Dimensions of the t1 image
 v.roiName = roi.fname;
 

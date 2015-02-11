@@ -39,7 +39,6 @@ function [ipFuncCoords inds] = ip2functionalCoords(inplane, ipAnatCoords, ...
 
 if ~exist('scan', 'var') || isempty(scan),  scan            = 1;     end
 if ~exist('preserveCoords', 'var'),         preserveCoords  = false; end
-if ~exist('preserveExactValues', 'var'),preserveExactValues = false; end
 
 % num voxels in
 nVoxels  = size(ipAnatCoords, 2);
@@ -57,13 +56,7 @@ if ~preserveExactValues, ipFuncCoords = round(ipFuncCoords); end
 
 % remove redunanant voxels
 if ~preserveCoords
-    [ipFuncCoords ia] = intersectCols(ipFuncCoords, ipFuncCoords); 
-    
-    % when we use intersectCols to remove redundant voxels, we also have
-    % the undesired result of sorting voxels. to preserve the order of the
-    % voxels, we need to unsort.
-    [~, inds] = sort(ia);
-    ipFuncCoords = ipFuncCoords(:, inds);
+    ipFuncCoords = intersectCols(ipFuncCoords, ipFuncCoords); 
 end
 
 if nargout > 1

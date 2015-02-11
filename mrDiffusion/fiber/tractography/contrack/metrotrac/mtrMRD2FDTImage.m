@@ -1,6 +1,6 @@
 function mtrMRD2FDTImage(fname)
 
-ni = niftiRead(fname);
+ni = readFileNifti(fname);
 if length(size(ni.data)) == 3
     ni.data = ni.data(end:-1:1,:,:);
 elseif length(size(ni.data)) == 4

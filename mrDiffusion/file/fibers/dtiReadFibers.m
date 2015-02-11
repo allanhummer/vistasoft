@@ -63,36 +63,21 @@ if(~exist('versionNum','var')), versionNum = 0.1; end
 if(~exist('coordinateSpace','var')), coordinateSpace = 'acpc'; end
 if ~exist('fg','var'), error('No Fiber Group variable found.'); end
 
-% Convert the fiber group to an array of fiber groups if there are separate
-% fiber groups defined within the fg.subgroups field
 if(isfield(fg,'subgroup')&&~isempty(fg.subgroup))
-    % Get all the subgroup index numbers. We loop over and look in the
-    % subgroup index in case there are some empty fiber groups we still
-    % leave the propper group for them
-    for sg = 1:length(fg.subgroupNames)
-        sgInds(sg) = fg.subgroupNames(sg).subgroupIndex;
-    end
-    % Get the number of fiber groups
+    sgInds = unique(fg.subgroup);
     nfg = numel(sgInds);
-    % Set a color for each group
     clr = round(hsv(nfg)*235+10);
-    % Loop over the number of fiber groups and divide the fibers into there
-    % own entry into the array
     for(ii=1:nfg)
-        % indices of the fibers corresponding to fiber group nfg
         inds = fg.subgroup==sgInds(ii);
         if ~isfield(fg, 'subgroupNames')
             subgname=sprintf('%s_%02d',fg.name,ii);
         else
-            % Get teh fiber group name
-            subgname=fg.subgroupNames(vertcat(fg.subgroupNames.subgroupIndex)==sgInds(ii)).subgroupName;
+            subgname=[fg.name '--' fg.subgroupNames(vertcat(fg.subgroupNames.subgroupIndex)==sgInds(ii)).subgroupName];
         end
-        % Create a new fiber group in the array
         tmp(ii) = dtiNewFiberGroup(subgname, clr(ii,:), fg.thickness, fg.visible, fg.fibers(inds));
         if ~isempty(fg.seeds)
             tmp(ii).seeds = fg.seeds(inds);
         end
-        % Copy parameters over. This is probably not necessary
         tmp(ii).seedRadius = fg.seedRadius;
         tmp(ii).seedVoxelOffsets = fg.seedVoxelOffsets;
         tmp(ii).params = fg.params;

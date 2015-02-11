@@ -69,6 +69,7 @@ alignvolumedata(volpre,rx.volVoxelSize,refpre,rx.refVoxelSize,knk.trORIG);
 % (if you need help with the shortcut keys:) 
 % doc defineellipse3d 
 [~,mn,sd] = defineellipse3d(refpre);
+close all
 %% 4c Automatic alignment (coarse)
 useMI = true;  % you need MI if the two volumes have different tissue contrast.
                % it's much faster to not use MI.
@@ -100,7 +101,7 @@ tr = alignvolumedata_exporttransformation;
 T = transformationtomatrix(tr,0,rx.volVoxelSize);
 
 %% (5) Save as alignment for your vista session 
-vw = initHiddenInplane; mrGlobals; 
+mrGlobals; 
 mrSESSION.alignment = T;
 saveSession;
 

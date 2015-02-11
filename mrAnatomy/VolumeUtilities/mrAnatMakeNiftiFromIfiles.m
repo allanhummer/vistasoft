@@ -64,7 +64,7 @@ end
 [scanner2img] = computeXformFromIfile(ifileDir);
 
 % Get a default NIFTI struct
-niftiIm = niftiRead;
+niftiIm = readFileNifti;
 if(length(outFileName)<7||~strcmpi(outFileName(end-6:end),'.nii.gz'))
   outFileName = [outFileName '.nii.gz'];
 end

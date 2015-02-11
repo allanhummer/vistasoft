@@ -66,7 +66,7 @@ case 'Inplane'
     % pull out curSlice
     slice = dataScan(:,:,curSlice);
     % interpolate up to the size of the anatomy image
-    slice = upSampleRep(slice,viewGet(vw,'Anat Slice Dims'));
+    slice = upSampleRep(slice,mrSESSION.inplanes.cropSize);
     
 case {'Volume','Gray'}
     % Get slice orientation
@@ -77,7 +77,7 @@ case {'Volume','Gray'}
     % Find indices of the appropriate VOLUME.coords, make the image,
     % and a 2xN array of image coordinates (where N is the
     % number of VOLUME.coords in the slice).
-    volSize = viewGet(vw,'Size');
+    volSize = viewSize(vw);
     
     switch orientation
     case 1 

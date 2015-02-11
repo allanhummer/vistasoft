@@ -1,4 +1,4 @@
-function [roiInd, coords] = roiIndices(view, coords, preserveCoords)
+function [roiInd, coords] = roiIndices(view, coords, preserveCoords);
 % [roiInd, dataCoords] = roiIndices(view, roiCoords, [preserveCoords=0]);
 %
 % figure out the indices in the map
@@ -43,14 +43,14 @@ if iscell(coords),
     if length(coords) == 1,
         % straightforward conversion
         coords = coords{1};
-    else
+    else,
         % pick view.selectedROI
         coords = coords{view.selectedROI};
     end;
 end;
 
 
-switch viewGet(view, 'viewType')
+switch view.viewType
     case 'Inplane'
         rsFactor = upSampleFactor(view, 1);
         coords(1,:) = ceil(coords(1,:) ./ rsFactor(1));
@@ -60,11 +60,11 @@ switch viewGet(view, 'viewType')
                 
     case {'Gray' 'Volume'}
 		if preserveCoords==0
-	        [coords, roiInd] = intersectCols(view.coords, coords);
+	        [coords roiInd] = intersectCols(view.coords, coords);
 		else
 			% intersectCols sorts the voxel order; avoid this, although 
 			% this will be substantially slower:
-			roiInd = NaN([1 size(coords, 2)]);
+			roiInd = repmat(NaN, [1 size(coords, 2)]);
 			for v = 1:size(coords, 2)
 				I = find( view.coords(1,:)==coords(1,v) & ...
 				   	      view.coords(2,:)==coords(2,v) & ...

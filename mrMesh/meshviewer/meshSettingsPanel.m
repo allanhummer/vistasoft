@@ -12,6 +12,10 @@ function h = meshSettingsPanel(parent);
 % ras 03/14/2006.
 if notDefined('parent'), parent = gcf; end
 
+% depending on the platform, java figures can be a pain. 
+% let's try to set it appropriately here:
+javaFigs = mrvJavaFeature;
+
 h.panel = mrvPanel('right', .4);
 
 % listbox w/ settings
@@ -74,5 +78,9 @@ if isunix
     set(h.rename, 'Parent', gcf, 'Position', [.65 .3 .15 .1]);
     set(h.delete, 'Parent', gcf, 'Position', [.8 .3 .15 .1]);
 end
+
+% reset whatever java figures setting had been before we ran this
+% feature('javafigures', javaFigs);
+mrvJavaFeature(javaFigs);
 
 return

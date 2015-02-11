@@ -1,4 +1,4 @@
-function [inplane ok] = roiLoadVol2Inplane(inplane, roiName, saveFlag)
+function [inplane ok] = roiLoadVol2Inplane(inplane, roiName, saveFlag);
 %
 % [inplane ok] = roiLoadVol2Inplane(inplane, <roiName>, <saveFlag=1>);
 %

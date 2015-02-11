@@ -233,19 +233,11 @@ switch lower(param)
         else bgNum = varargin{1};
         end
         val = dtiH.bg(bgNum).mmPerVoxel;
-    
     case {'dt6mmpervoxel','mmpervoxel'}
         % The resolution of the diffusion (dt6) data
         val = dtiH.mmPerVoxel;
         
-    case {'unitstring','unitstr'}
-       % Get the units on the current anatomy       
-        if isempty(varargin), bgNum = dtiGet(dtiH,'bg num');
-        else bgNum = varargin{1};
-        end
-        val = dtiH.bg(bgNum).unitStr;   
-    
-    % Anatomy and related slizes
+        % Anatomy and related slizes
     case {'currentanatomydata','curanatdata'}
        % anat = dtiGet(dtiH,'curanat data');       
        n   = dtiGet(dtiH,'bg num');
@@ -751,7 +743,7 @@ switch lower(param)
         val = str2double(get(dtiH.editOverlayAlpha, 'String'));
 
     otherwise
-        error('[%s] Unknown parameter [%s]',mfilename, param);
+        error('Unknown parameter');
 end
 return;
 

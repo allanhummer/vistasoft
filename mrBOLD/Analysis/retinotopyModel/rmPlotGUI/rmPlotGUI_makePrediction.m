@@ -53,16 +53,8 @@ RFs = rmPlotGUI_makeRFs(modelName, rfParams, M.params.analysis.X, M.params.analy
 pred = M.params.analysis.allstimimages * RFs;
 
 % Determine which frames have no stimulus. We may want to use this
-% information to highlight the blanks in the time series plots. We need to
-% determine blanks from the original images, not the images that have been
-% convolved with the hRF.
-stim = [];
-for ii = 1:length(M.params.stim)
-   endframe = size(M.params.stim(ii).images_org, 2);
-   frames =  endframe - M.params.stim(ii).nFrames+1:endframe;
-    stim = [stim M.params.stim(ii).images_org(:, frames)];
-end
-blanks = sum(stim, 1) < .001;
+% information to highlight the blanks in the time series plots
+blanks = sum(M.params.analysis.allstimimages, 2) < .001;
 
 %% get/make trends
 [trends, ntrends, dcid] = rmMakeTrends(M.params, 0);

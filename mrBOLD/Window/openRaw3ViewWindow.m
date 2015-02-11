@@ -47,9 +47,7 @@ VOLUME{s}.refreshFn = 'volume3View';
 %%%%%%%%%%%%%%%%%%
 % Load Anatomies %
 %%%%%%%%%%%%%%%%%%
-VOLUME{s} = loadAnat(VOLUME{s});
-%TODO: Change the functionality of loadAnat to bring it in line with the
-%inplane load anat functionality
+VOLUME{s} = loadAnat(VOLUME{s}); %#ok<*NASGU>
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialize data slots %
@@ -77,7 +75,7 @@ VOLUME{s}.curDataType = 1;
 VOLUME{s}.curScan = 1;
 
 % Initialize location in volume space
-dims = viewGet(VOLUME{s},'Size');
+dims = viewSize(VOLUME{s});
 VOLUME{s}.loc = round(dims./2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

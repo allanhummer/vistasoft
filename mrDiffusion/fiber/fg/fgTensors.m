@@ -1,7 +1,7 @@
-function Q = fgTensors(fg,dParms)
+function Q = fgTensors(fibers,dParms)
 %Calculate a tensor for forward modeling at each point of each fiber
 %
-%  Q = fgTensors(fgImg,dParms)
+%  Q = fgTensors(fibersImg,dParms)
 %
 % Q is a cell array of the same length as the number of fibers
 % Each Q{ii} contains a matrix of (numNodes x 9) tensors.
@@ -19,16 +19,19 @@ function Q = fgTensors(fg,dParms)
 % (c) 2012 Stanford VISTA Team
 
 % Preallocate
-nFibers = length(fg.fibers); % The number of Fibers.
+nFibers = length(fibers); % The number of Fibers.
 Q       = cell(1,nFibers); % Memory for the tensors of each fiber.
 D       = diag(dParms);    % The diagonal form of the Tensors' model parameters.
 
-for ii = 1:nFibers
+% Handling parallel processing
+poolwasopen=1; % if a matlabpool was open already we do not open nor close one
+if (matlabpool('size') == 0), matlabpool open; poolwasopen=0; end
+parfor ii = 1:nFibers
  % Compute the diffusion gradient at each node of the fiber.
- fiberGradient = gradient(fg.fibers{ii});
+ fiberGradient = gradient(fibers{ii});
  
  % Number of nodes fro this fiber
- numNodes = size(fg.fibers{ii},2);
+ numNodes = size(fibers{ii},2);
  
  % preallocated memory for the vector representation of tensors.
  T = zeros(numNodes,9);
@@ -45,11 +48,15 @@ for ii = 1:nFibers
   %
   % The principal eigenvector is in the same direction of the
   % fiberGradient. The direction of the other two are scaled by dParms.
+  % Human friendly version fo the code:
+  % tensor = Rot*D*Rot'; % tensor for the current node, 3x3 matrix.
+  % T(jj,:) = reshape(tensor,1,9); % reshaped as a vector 1,9 vector
   T(jj,:) = reshape(Rot*D*Rot',1,9);
  end
  % T is a matrix; each row is a 1,9 version of the tensor.
  Q{ii} = T;
 end
+if ~poolwasopen, matlabpool close; end
 
 return
 

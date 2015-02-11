@@ -17,7 +17,7 @@ if ~exist(niFileName,'file')
 end
 
 % The anatomy data are int16.  Load them this way.
-anat = niftiRead(niFileName);
+anat = readFileNifti(niFileName);
 
 %% The data fields in the struct anat
 % The variable anat is a structure.

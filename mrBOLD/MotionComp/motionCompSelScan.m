@@ -17,12 +17,12 @@ function vw = motionCompSelScan(vw, typeName, scanList, baseFrame, nSmooth, base
 %               for sequential  motion compensation, first between- and
 %               then within-scans)
 %
-mrGlobals;
 
 if notDefined('typeName'),      typeName = dataTypeOverwriteCheck('MotionComp'); end
 if notDefined('scanList'),      scanList = selectScans(vw);     end
 if notDefined('vw'),            vw       = getSelectedInplane;  end
 if notDefined('baseScan'),      baseScan = [];                  end
+mrGlobals;
 
 if notDefined('baseFrame') || notDefined('nSmooth')
 	% Prompt user for smoothing and baseFrames:
@@ -35,7 +35,7 @@ if notDefined('baseFrame') || notDefined('nSmooth')
 end
 % record the data type from the source (pre-correction) data
 srcDt = vw.curDataType;
-%TODO: Replace with viewGet
+
 
 %% open a figure for the motion estimate report
 h_report = figure;
@@ -70,10 +70,9 @@ for iScan = 1:length(scanList)
 	if iScan==1
 		xlabel('Time (frames)')
 		ylabel('Motion (voxels)')
-    end
-    
-    dataTYPES(tgtDt) = dtSet(dataTYPES(tgtDt), 'Within Scan Motion', motion, tgtScan);
-	%dataTYPES(tgtDt).scanParams(tgtScan).WithinScanMotion = motion; %TODO: Use dtSet
+	end
+
+	dataTYPES(tgtDt).scanParams(tgtScan).WithinScanMotion = motion;
 end
 saveSession;
 

@@ -726,7 +726,7 @@ if(~isnumeric(f))
         xform = hdr.mat;
         unitStr = '';
     else
-        ni = niftiRead(fullfile(p,f));
+        ni = readFileNifti(fullfile(p,f));
         % we need the xform that brings us inline with the anatomy image. We
         % assume that the NIFTI/Analyze xform brings us to ac-pc space, so we want
         % the difference between the two ac-pc xforms.
@@ -763,7 +763,7 @@ end
 
 spm_defaults; global defaults;
 defaults.analyze.flip = 0;
-ni = niftiRead(fullfile(p,f));
+ni = readFileNifti(fullfile(p,f));
 % We assume that the NIFTI/Analyze xform brings us to ac-pc space.
 % Perhaps call mrAnatSetNiftiXform to let the user set this manually?
 xform = ni.qto_xyz;
@@ -2024,8 +2024,7 @@ return;
 function menuRois_buildFromCurImage_Callback(hObject, eventdata, handles)
 % Sure could use a comment and a pointer to where this is called in the
 % GUI.
-curImNum = dtiGet(handles, 'bgnum');
-
+curImNum = dtiGet(handles, 'curbacknum');
 imName   = handles.bg(curImNum).name;
 thresh   = [0.25 inf];
 smoothKernel = 3;
@@ -2870,7 +2869,7 @@ if(isempty(vAnatFile) || ~exist(vAnatFile, 'file'))
     vAnatFile = fullfile(p,f);
 end
 if strcmp(vAnatFile(end-6:end),'ii.gz')
-    vAnatomy=niftiRead(vAnatFile);
+    vAnatomy=readFileNifti(vAnatFile);
     xformVAnatToAcpc = vAnatomy.qto_xyz;
 else
     [vAnatomy,vAnatMm] = readVolAnat(vAnatFile);
@@ -4040,7 +4039,7 @@ if(~isfield(handles,'adcNi'))
         rawFname = fullfile(p,f);
     end
     
-    handles.adcNi = niftiRead(rawFname);
+    handles.adcNi = readFileNifti(rawFname);
 end
 
 [p,f,e] = fileparts(handles.adcNi.fname); [junk,f] = fileparts(f);

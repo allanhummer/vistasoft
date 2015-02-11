@@ -13,7 +13,7 @@ function conMaskLengthyStartVoxels(timeMaskFileOut, startVoxelMaskFile, pathsRoo
 %
 
 % Get startpoint mask
-niMask = niftiRead(startVoxelMaskFile);
+niMask = readFileNifti(startVoxelMaskFile);
 if(isempty(niMask.data))
     error('Could not find the start voxel mask.');
 end

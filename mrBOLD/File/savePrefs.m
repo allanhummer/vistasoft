@@ -54,7 +54,7 @@ end
 if checkfields(vw,'ui','zoom')
     zoomBounds = vw.ui.zoom;
 else
-    dims = viewGet(vw,'Size');
+    dims = viewSize(vw);
     
     % NOTE: the axis command operates in image logical (x, y, z) ordering.
     % The dims command returns matlab-style (y, x, z) ordering, so we have

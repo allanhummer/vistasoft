@@ -1,4 +1,4 @@
-function pathStr = tSeriesDir(vw,makeIt)
+function pathStr = tSeriesDir(view,makeIt)
 %Return tSeries directory for a view; make it if it does not exist
 %
 %   pathStr = tSeriesDir(view,[makeIt=1])
@@ -12,7 +12,7 @@ function pathStr = tSeriesDir(vw,makeIt)
 if notDefined('makeIt'), makeIt = 1; end
 % global mrSESSION
 % pathStr = fullfile(dataDir(view),'TSeries');
-datadir = dataDir(vw);
+datadir = dataDir(view);
 subdir = 'TSeries';
 pathStr = fullfile(datadir,subdir);
 if (makeIt && ~exist(pathStr,'dir')), ensureDirExists(pathStr); end

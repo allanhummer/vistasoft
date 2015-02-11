@@ -1,4 +1,4 @@
-%% t_meshShowContrast
+%% s_ShowContrastOnMesh
 %
 % Illustrates how to project a contrast map onto a 3D mesh
 %
@@ -10,7 +10,7 @@
 %
 % See also T_INITGRAYANDVOLUME, T_GLMRUN, T_GLMCOMPUTECONTRASTMAP, T_CONVERTMAPINPLANETOGRAY.
 %
-% JW (c) Stanford VISTA
+% Stanford VISTA
 %
 
 %% Initialize the key variables and data path:

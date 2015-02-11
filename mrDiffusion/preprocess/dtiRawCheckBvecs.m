@@ -10,7 +10,7 @@ dwRawFile = 'avg_set_nii.nii.gz';
 gradsFile = '1718.grads';
 bval = 1.0;
 
-dwRaw = niftiRead(dwRawFile);
+dwRaw = readFileNifti(dwRawFile);
 xform = eye(4);
 nvols = size(dwRaw.data,4);
 if(isnumeric(bval))

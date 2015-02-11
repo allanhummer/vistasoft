@@ -24,7 +24,7 @@ if ieNotDefined('inflatedMeshFile')
     end
 end;
 
-surfrelaxFile = fullfile(fileparts(which('mrMesh')), 'surfrelax');
+surfrelaxFile = fullfile(fileparts(which('mrmInflate')), 'surfrelax');
 
 if(ischar(meshFile))
     load(meshFile);

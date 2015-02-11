@@ -1,9 +1,6 @@
-%% s_BuildMesh
 % This script illustrates a method of building a mesh from a white matter
 % class file 
 %
-% 
-% (c) VISTASOFT, Stanford
 
 % You should put the patht= to a legitimate class file here.
 % fName = 'C:\u\brian\Matlab\mrDataExample\mrGray_sampleData\anatomy\left\Seg1\left.Class';

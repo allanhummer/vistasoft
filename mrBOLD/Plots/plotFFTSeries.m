@@ -106,11 +106,10 @@ catch ME
     rethrow(ME);
   end;
 end;
-
-% restrict the tseries to the appropriate frames
-framesToUse = viewGet(vw, 'frames to use');
-tSeries = tSeries(framesToUse);
-
+% % Compute the mean tSeries
+% ROIcoords = getCurROIcoords(INPLANE{selectedINPLANE});
+% 
+% tSeries = meanTSeries(INPLANE{selectedINPLANE},scanNum,ROIcoords);
 % Calulate the FFT;  At one point RS made these single precision, I think.  (BW)
 absFFT   = 2*abs(fft(tSeries)) / length(tSeries);
 % angleFFT = angle(fft(tSeries));

@@ -5,7 +5,6 @@
 %
 % Wandell
 %
-
 clear global FLAT 
 clear global GRAPHWIN 
 clear global HOMEDIR 
@@ -19,8 +18,3 @@ clear global selectedINPLANE
 clear global selectedVOLUME 
 clear global vANATOMYPATH
 clear global MRFILES
-
-%Clear all dictionary containers
-clear global DictViewTranslate
-clear global DictViewHelp
-clear global DictViewHeadings

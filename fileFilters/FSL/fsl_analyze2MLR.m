@@ -1,5 +1,5 @@
-function vw=fsl_analyze2MLR(vw,scansToProcess,processedDataType,newDataTypeName)
-% vw=fsl_analyze2MLR(vw,scansToProcess,processedDataType,newDataTypeName)
+function view=fsl_analyze2MLR(view,scansToProcess,processedDataType,newDataTypeName)
+% view=fsl_analyze2MLR(view,scansToProcess,processedDataType,newDataTypeName)
 % PURPOSE: Generates MLR tSeries from analyze data
 % The analyze files are typically the result of running fsl to do either motion correction or ICA noise removal or both.
 % They are placed into a new dataType in the MLR session.
@@ -14,7 +14,7 @@ function vw=fsl_analyze2MLR(vw,scansToProcess,processedDataType,newDataTypeName)
 % data file relative to the 'Analyze' directory.
 % NOTE: all these fsl_xxx routines expect you to work on the Original
 % datatype. 
-% Example call: vw=fsl_analyze2MLR(INPLANE{1},1:12,4,'filteredMCC_Orig')
+% Example call: view=fsl_analyze2MLR(INPLANE{1},1:12,4,'filteredMCC_Orig')
 % AUTHOR: ARW 12/16/04 
 % $Author: wade $
 % $Date: 2006/03/08 01:33:08 $
@@ -31,18 +31,18 @@ fslBase='/raid/MRI/toolbox/FSL/fsl';
     end
 fslPath=fullfile(fslBase,'bin'); % This is where FSL lives - should also be able to get this from a Matlab pref
 
-if (vw.curDataType~=1) % In general, there's no reason to enforce this but it makes everythign a little simpler.
+if (view.curDataType~=1) % In general, there's no reason to enforce this but it makes everythign a little simpler.
                          % In version 2 of these routines we'll allow you to work on any dataTYPE. 
     error('The data type must be Original (dataTYPE == 1)');
 end
 
-if (~exist('vw','var')  || (isempty(vw)))
-    vw=getSelectedInplane;
+if (~exist('view','var')  | (isempty(view)))
+    view=getSelectedInplane;
 end
 
-if (~exist('scansToProcess','var')  || (isempty(scansToProcess)))
+if (~exist('scansToProcess','var')  | (isempty(scansToProcess)))
     disp('Select scans to process');
-    scansToProcess=selectScans(vw,'Scans to process');
+    scansToProcess=selectScans(view,'Scans to process');
 end
 
 nSlices=mrSESSION.inplanes.nSlices;
@@ -78,23 +78,21 @@ end
 if ~existDataType(newDataTypeName), addDataType(newDataTypeName); end
 
 % Switch to it.
-vw = selectDataType(vw,existDataType(newDataTypeName));
+view = selectDataType(view,existDataType(newDataTypeName));
 
 % Get the tSeries directory for that dType
-tSerDir=tSeriesDir(vw);
+tSerDir=tSeriesDir(view);
 disp(tSerDir)
 
  
 % We have to populate the dataTYPES structure
 % for the new dataTYPE with reasonable numbers
 
-curDt = viewGet(vw,'Cur Dt');
-
-for thisScan=1:nScansToProcess
-    dataTYPES(curDt) = dtSet(dataTYPES(curDt),'Scan Params',dtGet(dataTYPES(1),'Scan Params'),thisScan);
-    dataTYPES(curDt) = dtSet(dataTYPES(curDt),'Annotation',['From original scan ',int2str(scansToProcess(thisScan))],thisScan);
-    dataTYPES(curDt) = dtSet(dataTYPES(curDt),'Block Params',dtGet(dataTYPES(1),'B Params',1), thisScan);
-    dataTYPES(curDt) = dtSet(dataTYPES(curDt),'Event Params',dtGet(dataTYPES(1),'E Params',1), thisScan);
+for thisScan=1:nScansToProcess   
+    dataTYPES(view.curDataType).scanParams(thisScan)=dataTYPES(1).scanParams(1);
+    dataTYPES(view.curDataType).scanParams(thisScan).annotation='From original scan',int2str(scansToProcess(thisScan));
+    dataTYPES(view.curDataType).blockedAnalysisParams(thisScan)=dataTYPES(1).blockedAnalysisParams(1);
+    dataTYPES(view.curDataType).eventAnalysisParams(thisScan)=dataTYPES(1).eventAnalysisParams(1);
 end
 
 saveSession;
@@ -116,26 +114,21 @@ for thisScanIndex=1:nScansToProcess
         fprintf('\nMaking scan directory %s\n',scandir);
         mkdir(tSerDir,['Scan',num2str(thisScan)]);
     end
-    thisTSerFull = [];
-    dimNum = 0;
+    
     % Here, add option to crop leading frames
     for thisSlice=1:nSlices
-        thisTSer=img(:,:,thisSlice,:);
-        thisTSer=reshape(thisTSer,(dims(1)*dims(2)),dims(4));
-        thisTSer=thisTSer';
-        dimNum = numel(size(thisTSer));
-        % Cast to 16bit  signed ints to save space
-        thisTSer=thisTSer./max(abs(thisTSer(:)));
-        thisTSer=int16(thisTSer*32767);
-        
-        thisTSerFull = cat(dimNum + 1, thisTSerFull, thisTSer);
-        disp(thisSlice);
-    end
-    
-    if dimNum == 3
-        thisTSerFull = reshape(thisTSerFull,[1,2,4,3]);
-    end %if
-    
-    savetSeries(thisTSerFull,vw,thisScan);
-    
+      thisTSer=img(:,:,thisSlice,:);
+      thisTSer=reshape(thisTSer,(dims(1)*dims(2)),dims(4));
+      thisTSer=thisTSer';
+      
+      % Cast to 16bit  signed ints to save space
+      thisTSer=thisTSer./max(abs(thisTSer(:)));
+      thisTSer=int16(thisTSer*32767);     
+      
+      savetSeries(thisTSer,view,thisScan,thisSlice);
+    disp(thisSlice);    
+  end
+  
 end
+
+% --------------

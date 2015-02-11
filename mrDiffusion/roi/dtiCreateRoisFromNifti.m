@@ -6,7 +6,7 @@ function roisArray=dtiCreateRoisFromNifti(niftiFile)
 
 %ER 11/2009 wrote it 
 
-roiNii = niftiRead(niftiFile);
+roiNii = readFileNifti(niftiFile);
 
         % Find all unique, non-zero indices, each distinct index will be a
         % mask for a distinct ROI

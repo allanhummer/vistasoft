@@ -13,6 +13,8 @@ if ischar(anal) && isequal(lower(anal), 'update')
     rfViewerUpdate;    return;
 end
 
+javaFig = mrvJavaFeature;
+
 anal.gui.fig = figure('Color', 'w', 'Name', [mfilename ' Voxel GUI']);
 
 % this GUI will have only one axes for showing the RF of a single
@@ -67,6 +69,8 @@ set(anal.gui.fig, 'UserData', anal);
 rfViewerUpdate;
 view(0, 90);
 
+mrvJavaFeature(javaFig);
+
 return
 % /--------------------------------------------------------------------- / %
 
@@ -74,7 +78,7 @@ return
 
 
 % /--------------------------------------------------------------------- / %
-function rfViewerUpdate
+function rfViewerUpdate;
 anal = get(gcf,'UserData'); 
 v = round( get(anal.gui.voxSlider.sliderHandle, 'Value') ); 
 r = get(anal.gui.roiPopup, 'Value'); 

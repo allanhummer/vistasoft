@@ -1,4 +1,4 @@
-function vw=read4dAnalyzeToTseries(vw,inFile,scan,volsToSkip,flipLRflag,timesRot90,flipSliceOrder)
+function view=read4dAnalyzeToTseries(view,inFile,scan,volsToSkip,flipLRflag,timesRot90,flipSliceOrder)
 % view=read4dAnalyzeToTseries(view,inFile,scan,volsToSkip,flipLR,timesRot90,flipSliceOrder)
 %
 % reads in a 4d analyze file and writes TSeries for MRL
@@ -34,11 +34,14 @@ disp(sprintf('[%s]:Reading volume.',mfilename));
 V = spm_vol(inFile);
 funcVol = spm_read_vols(V); 
 
+
+%%
+
 % Crop the skipped frames
 if ~isempty(volsToSkip)
     funcVol=funcVol(:,:,:,(volsToSkip+1):end);
 end
-[y, x, nSlices, nVols]=size(funcVol);
+[y x nSlices nVols]=size(funcVol);
 
 if y == x
     for thisSlice=1:nSlices
@@ -84,39 +87,27 @@ end
 
 % Now write them out in a different format
 fprintf('\n[%s]:Done reading data: Writing now...',mfilename);
-tSeriesFull = [];
-dimNum = 0;
 if flipSliceOrder
     for t=1:nSlices
+
         tSeries=squeeze(funcVol(:,:,nSlices-t+1,:));
         tSeries=reshape(tSeries,x*y,nVols);
         tSeries=tSeries';
-        dimNum = numel(size(tSeries));
-        tSeriesFull = cat(dimNum + 1, tSeriesFull, tSeries); %Combine together
+        savetSeries(tSeries,view,scan,t);
 
         fprintf('.');
     end
 else
-    tSeriesFull = [];
-    dimNum = 0;
     for t=1:nSlices
+
         tSeries=squeeze(funcVol(:,:,t,:));
         tSeries=reshape(tSeries,x*y,nVols);
         tSeries=tSeries';
-        dimNum = numel(size(tSeries));
-        tSeriesFull = cat(dimNum + 1, tSeriesFull, tSeries); %Combine together
+        savetSeries(tSeries,view,scan,t);
 
         fprintf('.');
     end
-    
 end
-
-if dimNum == 3
-    tSeriesFull = reshape(tSeriesFull,[1,2,4,3]);
-end %if
-
-savetSeries(tSeriesFull,vw,scan);
-
 
 fprintf('Done.\n');
 disp(' ');disp(' ');

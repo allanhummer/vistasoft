@@ -1,76 +1,53 @@
 function [newImg,xform,deformField] = mrAnatResliceSpm(img, xform, bb, mmPerVox, bSplineParams, showProgress)
+% Use SPM spline-based interpolation to reslice a volume image set
 %
-% Use SPM spline-based interpolation to reslice a volume image to a specific 
-% resolution in mm.
+% [newImg,xform,deformField] = mrAnatResliceSpm(img, xform, [boundingBox],
+%    [mmPerVox], [bSplineParams=[7 7 7 0 0 0]], [showProgress=1])
 %
-% Also crops the image to be constrained inside a specific bounding box (bb) 
-% also specified in mm.
+% xform: 4x4 affine transform to apply to input image (eg. physical space to
+% image space xform)
+% boundingBox: new bounding box. Defaults to a box the same size as the
+% input image.
+% mmPerVox: new (output) voxel size (defaults to [1 1 1])
+% bSplineParams: (see spm_bsplins - defaults to [7 7 7 0 0 0], a 7th oder
+%     spline; use [1 1 1 0 0 0] for trilinear)
 %
-%  [newImg, xform, deformField] = mrAnatResliceSpm(img, xform,   ...
-%                                 [boundingBox], [mmPerVox],     ...
-%                                 [bSplineParams=[7 7 7 0 0 0]], ...
-%                                 [showProgress=1])
-%
-% INPUTS:
-%           xform - 4x4 affine transform to apply to input image 
-%                   This xform should take the image from image space to mm.
-%     boundingBox - New bounding box specified in mm.
-%                   Defaults to a box the same size as the input image.
-%        mmPerVox - Output voxel size in mm. Defaults to [1 1 1], 1 cubic mm.
-%   bSplineParams - Parameters for the spm function that does the image resampling.
-%                   (see spm_bsplins). Defaults to  [7 7 7 0 0 0], a 7th oder spline. 
-%                   For trilinear interpolation use [1 1 1 0 0 0].
-%    showProgress - Logical, (1,0). If set to 1 shows a wait bar with the
-%                   progress of the process.
-%
-% OUTPUTS:
-%          newImg - The final image resampled at the wanted resolution nd
-%                   contained inside the requested bounding box.
-%           xform - This is the xform that takes the newImg from mm
-%                   space to image space.
-%     deformField - The deformation applied to the image. Need better
-%                   comment.
-% 
-% EXAMPLE:
-%
+% Example:
 %   We like the translation to roughly center the image, so be sure to set 
-%   the transform matrix appropriately. For example,
+% the transform matrix appropriately. For example,
 %
-%     origin = (size(img)+1)/2;
-%     xform = inv([diag(1./mmPerVox), origin'; [0 0 0 1]]);
+%   origin = (size(img)+1)/2;
+%   xform = inv([diag(1./mmPerVox), origin'; [0 0 0 1]]);
 % 
-%   This will ensure that you rotate about the center of the image. Note that 
-%   it's easiest to assemble the reverse transform (image space to mm space) and 
-%   then invert it to get the centered mm space to image space that we want. 
-%   Basically, what we want is an xform such that
+% This will ensure that you rotate about the center of the image. Note that 
+% it's easiest to assemble the reverse transform (image space to mm space) and 
+% then invert it to get the centered mm space to image space that we want. 
+% Basically, what we want is an xform such that
 %
-%     inv(xform)*[0 0 0 1]'
+%   inv(xform)*[0 0 0 1]'
 %
-%   gives you the desired origin (image center, in our case).
+% gives you the desired origin (image center, in our case).
 %
-%   The bounding box (bb) defines the new image size, in the new (mm space) 
-%   coordinate frame. If you use an xform matrix that centers each image (as above), 
-%   then you can create your bounding box such that it will preserve the input 
-%   image dimensions. Eg:
+% The bounding box (bb) defines the new image size, in the new (mm space) 
+% coordinate frame. If you use an xform matrix that centers each image (as above), 
+% then you can create your bounding box such that it will preserve the input 
+% image dimensions. Eg:
 %
-%   define bounding box in image space
-%     bb = [-size(img)/2; size(img)/2-1]
-%   
-%   now convert to mm space
-%     bb = V.mat*[bb,[0;0]]';
-%     bb = bb(1:3,:)';
+% define bounding box in image space
+%   bb = [-size(img)/2; size(img)/2-1]
+% now convert to mm space
+%   bb = V.mat*[bb,[0;0]]';
+%   bb = bb(1:3,:)';
 %
-%   (note- you need -1 in there somewhere to make it work exactly, but I'm not sure 
-%   which side you should put it on to avoid a 1/2 voxel shift.)
+% (note- you need -1 in there somewhere to make it work exactly, but I'm not sure 
+% which side you should put it on to avoid a 1/2 voxel shift.)
 %
-%   The call to mrAnatResliceSpm will be something like:
-%   img2 = mrAnatResliceSpm(img, inv(V.mat), bb, mmPerVox);
+% The call to mrAnatResliceSpm will be something like:
+% img2 = mrAnatResliceSpm(img, inv(V.mat), bb, mmPerVox);
 %
-%   Or, if you wanted to reslice to 1mm isotropic voxels with trilinear interp:
-%   img2 = mrAnatResliceSpm(img, inv(V.mat), bb, [1 1 1], [1 1 1 0 0 0]);
+% Or, if you wanted to reslice to 1mm isotropic voxels with trilinear interp:
+% img2 = mrAnatResliceSpm(img, inv(V.mat), bb, [1 1 1], [1 1 1 0 0 0]);
 % 
-% (c) Stanford Vista Team 2012
-
 % HISTORY:
 % 2004.11.10 RFD: wrote it, after gaining some understanding of the spm
 % conventions.
@@ -78,7 +55,8 @@ function [newImg,xform,deformField] = mrAnatResliceSpm(img, xform, bb, mmPerVox,
 % wrong for cases where mmPerVox ~= [1 1 1].
 % 2006.07.19 RFD: NOW the newXform is correct for mmPerVox ~= 1. 
 % 2007.10.30 RFD: Finally- newXform for mmPerVox ~= 1 is consistent with SPM.
-
+%
+%
 
 if(~exist('mmPerVox','var') || isempty(mmPerVox))
     mmPerVox = [1 1 1];

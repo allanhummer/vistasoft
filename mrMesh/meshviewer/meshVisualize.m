@@ -5,7 +5,7 @@ function [msh, lights] = meshVisualize(msh,id)
 % 
 % This mesh structure must contain vertices and faces.
 %
-% A msh is input and the mesh is displayed in mrMesh window number id.  If
+% A Msh is input and the mesh is displayed in mrMesh window number id.  If
 % no id number is sent in a new window is opened.
 %
 % If the input is an old style mesh, it is changed updated the best we can. 
@@ -24,6 +24,7 @@ function [msh, lights] = meshVisualize(msh,id)
 %
 % (c) Stanford Vista Team
 
+meshName = '';
 backColor = [1,1,1];  
 
 if notDefined('msh'), error('The mesh is required.'); end
@@ -34,6 +35,7 @@ if notDefined('id'), id = -1; end
 % Set initial parameters for the mesh.
 if isempty(meshGet(msh,'host')), msh = meshSet(msh,'host',host); end
 if isempty(meshGet(msh,'id')),   msh = meshSet(msh,'id',id); end
+if isempty(meshGet(msh,'name')), msh = meshSet(msh,'name',meshName); end
 
 % If the window is already open, no harm is done.
 if mrmCheckServer, mrMesh(meshGet(msh,'host'),meshGet(msh,'id'),'close'); end

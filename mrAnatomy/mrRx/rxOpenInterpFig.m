@@ -1,10 +1,11 @@
-function rx = rxOpenInterpFig(rx)
+function rx = rxOpenInterpFig(rx);
 %
 %  rx = rxOpenInterpFig(rx);
 %
 % Open a window for the transformed, interpolated volume.
 %
 % ras 02/05.
+javaFigs = mrvJavaFeature;
 
 rx.ui.interpFig = figure('Color', 'w', ...
                       'Name', 'mrRx Prescribed Slice', ...
@@ -29,4 +30,7 @@ rx.ui.interpHistoThresh = uicontrol('Style',  'checkbox',  ...
                         'FontSize',  10, 'BackgroundColor',  'w',  ...
                         'Value',  1, 'Callback',  'rxRefresh;');                         
                          
+
+mrvJavaFeature(javaFigs);
+
 return

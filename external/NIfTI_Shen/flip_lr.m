@@ -73,12 +73,27 @@ function flip_lr(original_fn, flipped_fn, old_RGB, tolerance, preferredForm)
    nii = load_nii(original_fn, [], [], [], [], old_RGB, tolerance, preferredForm);
    M = diag(nii.hdr.dime.pixdim(2:5));
    M(1:3,4) = -M(1:3,1:3)*(nii.hdr.hist.originator(1:3)-1)';
-   M(1,:) = -1*M(1,:);
+   
+   %M(1,:) = -1*M(1,:);
+   
+   %Correction convert rpi to lpi
+   M(1,3) = -1*M(1,3);
+   
+   
    nii.hdr.hist.sform_code = 1;
    nii.hdr.hist.srow_x = M(1,:);
    nii.hdr.hist.srow_y = M(2,:);
    nii.hdr.hist.srow_z = M(3,:);
    save_nii(nii, flipped_fn);
 
-   return;					% flip_lr
+   %Copy sform to qform with fsl
+   
+   system(['fslorient -copysform2qform ',flipped_fn]);
+   
+   
+   return;					
+   
+   
+   
+   
 

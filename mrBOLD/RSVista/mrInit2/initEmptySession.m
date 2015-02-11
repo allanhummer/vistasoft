@@ -1,4 +1,4 @@
-function mrSESSION = initEmptySession
+function mrSESSION = initEmptySession;
 %
 % mrSESSION = initEmptySession: [no arguments]
 %
@@ -8,7 +8,7 @@ function mrSESSION = initEmptySession
 %
 % ras 04/05.
 
-[~, f] = fileparts(pwd);
+[p f] = fileparts(pwd);
 
 mrSESSION.mrVistaVersion = '2.0'; 
 mrSESSION.sessionCode = f;
@@ -19,9 +19,10 @@ mrSESSION.inplanes = [];
 mrSESSION.functionals = [];
 mrSESSION.coil = '';
 mrSESSION.operator = '';
-mrSESSION.inplanes.inplanePath = '';
 
 dataTYPES.name = 'Original';
+
+vANATOMYPATH = '';
 
 save mrSESSION mrSESSION dataTYPES
 

@@ -58,7 +58,7 @@ elseif isnumeric(roi)
         roi = struct('color','coords','name','viewType');
         roi.color = 'b';
         roi.coords = coords;
-        roi.viewType = viewGet(view,'View Type');
+        roi.viewType = view.viewType;
         if size(roi,2)==1
             roi.name = sprintf('Point %i, %i, %i',coords(1),coords(2),coords(3));
         else

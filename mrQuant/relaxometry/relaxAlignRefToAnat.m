@@ -36,8 +36,8 @@ end
 spm_defaults; global defaults;
 defaults.analyze.flip = 0;
 
-anat = niftiRead(anatFile);
-ref = niftiRead(refFile);
+anat = readFileNifti(anatFile);
+ref = readFileNifti(refFile);
 
 % *** We should prompt the user for some parameters here, like default clip
 % values, type of registration, etc.

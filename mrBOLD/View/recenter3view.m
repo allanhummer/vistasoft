@@ -1,4 +1,4 @@
-function vw = recenter3view(vw,orientation)
+function view = recenter3view(view,orientation)
 % view = recenter3view(view,orientation);
 %
 % recenters a 3-view window based on the current location of the 
@@ -40,40 +40,44 @@ switch orientation
     case 1, % axial view
         locRL = locX;
         locAP = locY;        
-        locSI = vw.loc(1);
+        locSI = view.loc(1);
     case 2, % coronal view
         locRL = locX;
-        locAP = vw.loc(2);        
+        locAP = view.loc(2);        
         locSI = locY;
     case 3, % sagittal view
-        locRL = vw.loc(3);
+        locRL = view.loc(3);
         locAP = locX;       
         locSI = locY;
 end
 
 % might have imgs L/R flipped into radiological conventions
-if (orientation<3) && isfield(vw.ui,'flipLR') && vw.ui.flipLR==1
-    locRL = size(vw.anat,3) - locRL + 1;
+if (orientation<3) && isfield(view.ui,'flipLR') && view.ui.flipLR==1
+    locRL = size(view.anat,3) - locRL + 1;
 end
 
 % make the selected orientation the current one
-setCurSliceOri(vw,orientation);
+setCurSliceOri(view,orientation);
 
 % mark the current location
 loc = [locSI locAP locRL];
 
 % if we're zoomed in, update the zoom bounds so that the crosshairs are
 % centered:
-maxZoom = [1 1 1; viewGet(vw,'Size')]';
-if ~isequal(vw.ui.zoom, maxZoom)
-	rng = diff(vw.ui.zoom, 1, 2) ./ 2;
+maxZoom = [1 1 1; viewSize(view)]';
+if ~isequal(view.ui.zoom, maxZoom)
+	rng = diff(view.ui.zoom, 1, 2) ./ 2;
 	newZoom = [loc(:)-rng loc(:)+rng];
+
+% 	% constrain to view bounds
+% 	newZoom(:,1) = max([1 1 1]', newZoom(:,1));
+% 	newZoom(:,2) = min(viewSize(view)', newZoom(:,2));
 	
-	vw.ui.zoom = newZoom;
+	view.ui.zoom = newZoom;
 end
 
 % refresh volume 3-view
-vw = volume3View(vw, loc);
+view = volume3View(view, loc);
 
 return
 

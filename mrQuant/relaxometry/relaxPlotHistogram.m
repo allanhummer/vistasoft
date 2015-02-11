@@ -11,6 +11,6 @@ if (nargin ==2)
 end
 
 
-histData = niftiRead(file);
+histData = readFileNifti(file);
 histogram = hist(histData.data(histData.data(:)>0), vector);
 plot (vector, histogram, color);

@@ -21,14 +21,14 @@ function msg = pnet_readMsg(con)
 msg = [];
 
 % Don't wait forever before aborting:
-if ispc, pnet(con,'setreadtimeout',4);
+if ispc, pnet(con,'setreadtimeout',2);
 else     pnet(con,'setreadtimeout',2);
 end
 
 % The header and trailer are each 8 bytes long
 hdr = pnet(con,'read',8,'char');
 if(length(hdr)~=8)
-  warning('could not read msg header.  Header length %d\n',length(hdr));
+  warning('could not read msg header.');
   return;
 end
 sig = uint8(hdr(1:4));

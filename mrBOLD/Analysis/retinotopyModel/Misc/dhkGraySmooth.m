@@ -13,6 +13,7 @@ function [data wConMat] = dhkGraySmooth(view,data,iterlambda,wConMat,mask)
 % 2008/02 SOD: adapted from Moo K. Chung's code
 % (http://www.stat.wisc.edu/softwares/hk/hk.html)
 
+
 if ~exist('view','var') || isempty(view),
     error('Need view struct.');
 else

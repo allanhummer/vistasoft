@@ -54,11 +54,13 @@ if ~strcmp(vw.ui.displayMode, 'anat')
     coOK = ~isempty(viewGet(vw,'co')) | ~isempty(viewGet(vw,'map')); % maps count too!
     if coOK, coOK = ~isempty(viewGet(vw,'scanco',scan)); end  % vw.co{scan}
     if coOK
+        %vw
         co = viewGet(vw,'scanco',scan);
         if(dataScale~=1) co = co.*dataScale; end
         ph = viewGet(vw,'scanphase',scan);
         map = viewGet(vw,'mapn',scan);
-
+        %size(valid)
+        %size(co)
         valid = valid & (co >= cothresh);
 		if (~isempty(ph))
 			if (phWindow(1) > phWindow(2))
@@ -116,8 +118,7 @@ end
 % rare case that non-phase-data has the same [0 2*pi] range.
 phaseFlag = 0;
 
-displayMode = viewGet(vw, 'display mode');
-switch displayMode
+switch vw.ui.displayMode
     case {'co','coherence'}
         if coOK
             cmap = viewGet(vw,'coherenceMap');
@@ -164,13 +165,13 @@ switch displayMode
         cmap = [];
         
     otherwise
-        error('Unknown display mode %s.', displayMode);
+        error('Unknown display mode.');
 end
 if(dataScale~=1) data = data.*dataScale; end
 dataMaskIndices = unique(dataMaskIndices);
 
 if(clusterThresh>0)
-    sz = viewGet(vw,'Size');
+    sz = viewSize(vw);
     maskVol = false(sz);
     maskCoords = vw.coords(:,dataMaskIndices);
     maskVol(sub2ind(sz,maskCoords(1,:),maskCoords(2,:),maskCoords(3,:))) = true;

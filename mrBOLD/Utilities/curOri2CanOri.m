@@ -1,4 +1,4 @@
-function newCoords = curOri2CanOri(vw, coords)
+function newCoords = curOri2CanOri(view, coords);
 %
 % newCoords = curOri2CanOri(view, coords);
 %
@@ -28,8 +28,8 @@ function newCoords = curOri2CanOri(vw, coords)
 % (radiological viewing conventions)
 newCoords = [];
 if ~isempty(coords)
-    if strcmp(viewGet(vw,'View Type'),'Volume') || strcmp(viewGet(vw,'View Type'),'Gray')
-        curSliceOri = getCurSliceOri(vw);
+    if strcmp(view.viewType,'Volume') | strcmp(view.viewType,'Gray')
+        curSliceOri = getCurSliceOri(view);
         switch curSliceOri
             case 1 % axial slice
                 newCoords = coords([3 1 2],:);
@@ -44,8 +44,8 @@ if ~isempty(coords)
         % also allow for the L/R flip option, which lets you 
         % view the anatomy in radiological units (to match the
         % GE software conventions)
-        if checkfields(vw, 'ui', 'flipLR') && vw.ui.flipLR==1
-            dims = viewGet(vw,'Size');
+        if checkfields(view, 'ui', 'flipLR') & view.ui.flipLR==1
+            dims = viewSize(view);
             newCoords(3,:) = dims(3) - newCoords(3,:);
         end
     else

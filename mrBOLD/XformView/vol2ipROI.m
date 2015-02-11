@@ -21,7 +21,7 @@ global vANATOMYPATH
 volROI = roiCheck(volROI);
 
 % Get voxel sizes to make sure that the transformation preserves volume
-ipVoxSize = viewGet(ipView, 'voxel size');
+ipVoxSize = mrSESSION.inplanes.voxelSize;
 volVoxSize = readVolAnatHeader(vANATOMYPATH);
 
 % initialize the inplane ROI
@@ -43,7 +43,7 @@ xform = inv(mrSESSION.alignment);
 coords = xformROIcoords(volROI.coords, xform, volVoxSize, ipVoxSize);
 
 % Toss coords outside the inplanes
-ipSize = viewGet(ipView,'Size');
+ipSize = viewSize(ipView);
 indices = ((coords(1,:) >= 1) & (coords(1,:) <= ipSize(1)) & ...
     (coords(2,:) >= 1) & (coords(2,:) <= ipSize(2)) & ...
     (coords(3,:) >= 1) & (coords(3,:) <= ipSize(3)));

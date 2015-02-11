@@ -33,9 +33,12 @@ function [co, amp, ph] = computeCorAnalSeries(vw, scanNum, sliceNum, nCycles, fr
 vw = percentTSeries(vw, scanNum, sliceNum);
 ptSeries = vw.tSeries;
 
-if exist('framesToUse','var')
-    ptSeries=ptSeries(framesToUse,:);
+if (ieNotDefined('framesToUse'))
+    framesToUse=1:size(ptSeries,1);
 end
+
+ptSeries=ptSeries(framesToUse,:);
+
 
 % Compute Fourier transform
 % 
@@ -64,7 +67,9 @@ sqrtsummagsq = sqrt(sum(scaledAmp(noiseIndices, :).^2));
 
 % (ras 06/07: sometimes sqrtsummagsq can be zero for some voxels;
 % don't throw a warning for this line only.)
+warning off MATLAB:divideByZero
 co = scaledAmp(nCycles+1,:)./sqrtsummagsq;
+warning on MATLAB:divideByZero
 clear scaledAmp
 
 % Calculate phase:

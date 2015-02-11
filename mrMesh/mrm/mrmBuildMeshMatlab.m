@@ -35,16 +35,13 @@ Ds = isosurface(classData.data,1);
 Ds = reducepatch(Ds,reduce);
 
 % If there is enough memory, try this
-normals = isonormals(classData.data,Ds.vertices);
-clear classData
+% normals = isonormals(classData.data,Ds.vertices);
+% clear classData
 
-% Create the mesh for return.
-% These should be sets
+% Create the mesh for return
 msh = meshCreate;
 msh.triangles = double(Ds.faces' - 1);
 msh.vertices  = double(Ds.vertices');
-msh.normals   = normals';
-
 
 % Set the colors.  Ultimately these should be colored with meshColor.
 c = ones(3,size(msh.vertices,2))*120;

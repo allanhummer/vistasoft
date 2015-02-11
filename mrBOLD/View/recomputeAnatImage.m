@@ -13,11 +13,10 @@ function anatIm = recomputeAnatImage(vw,displayMode,slice)
 % ras 01/05. Added b/c I want to migrate to using
 % brightness/contrast/possibly gamma, but also 
 % want back compatibility.
-if isequal(viewGet(vw, 'Name'),'hidden')
+if isequal(vw.name,'hidden')
     % hidden views: just return the anat
     % image w/o contrast adjustment
-    %TODO: put slice error handling here
-    anatIm = viewGet(view, 'anatomycurrentslice', slice);
+    anatIm = vw.anat(:,:,slice);
     return
 end
 

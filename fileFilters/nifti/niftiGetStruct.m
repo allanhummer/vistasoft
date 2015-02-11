@@ -137,7 +137,7 @@ function ni = niftiGetStruct(imArray, matrixTransform, sclSlope, description,...
 
 warning('OBSOLETE, the function %s was moved into niftiCreate.m',mfilename)
 
-ni = niftiRead;
+ni = readFileNifti;
 
 if ~exist('imArray','var')
     imArray = [];

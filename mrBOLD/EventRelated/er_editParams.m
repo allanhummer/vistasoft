@@ -1,4 +1,4 @@
-function [params ok] = er_editParams(params, dtName, scans)
+function [params ok] = er_editParams(params, dtName, scans);
 % A dialog to edit event-related analysis parameters.
 %
 % params = er_editParams(params, [dtName, scans]);
@@ -21,6 +21,9 @@ function [params ok] = er_editParams(params, dtName, scans)
 if notDefined('params'),  params = er_defaultParams; end
 
 ok = 0;
+
+%%%%%deal w/ java figures issue
+javaFigs = mrvJavaFeature;
 
 
 %%%%%check that all fields are assigned
@@ -262,5 +265,8 @@ if params.glmHRF==5
         params.glmHRF = f(1:end-4);
     end
 end
+
+% re-set java figures feature to what it was before
+mrvJavaFeature(javaFigs);
 
 return

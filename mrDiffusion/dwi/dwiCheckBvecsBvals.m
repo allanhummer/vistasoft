@@ -28,7 +28,7 @@ function [bvecs,bvals] = dwiCheckBvecsBvals(bvecs,bvals,dwiData)
 % Example:
 %           bvecs = dlmread('dwi.bvecs');
 %           bvals = dlmread('dwi.bvals');
-%         dwiData = niftiRead('dwi.nii.gz');
+%         dwiData = readFileNifti('dwi.nii.gz');
 %   [bvecs,bvals] = dwiCheckBvecsBvals(bvecs,bvals,dwiData);
 %
 % See also: dwiCreate.m, dwiLoad.m

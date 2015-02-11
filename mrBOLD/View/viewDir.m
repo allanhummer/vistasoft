@@ -1,4 +1,4 @@
-function str = viewDir(vw);
+function str = viewDir(view);
 %
 % str = viewDir(view);
 %
@@ -15,12 +15,12 @@ function str = viewDir(vw);
 %  ras 03/05.
 global HOMEDIR
 
-str = fullfile(HOMEDIR,vw.subdir);
+str = fullfile(HOMEDIR,view.subdir);
 
 if ~exist(str,'dir')
     fprintf('Trying to make %s...',str);
     try
-        [success, message] = mkdir(HOMEDIR,vw.subdir);
+        [success, message] = mkdir(HOMEDIR,view.subdir);
     catch
         fprintf('Whoops, didn''t succed. Maybe a permissions problem?');
         fprintf('\n Message: %s',message);

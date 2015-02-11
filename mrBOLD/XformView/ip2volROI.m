@@ -20,7 +20,7 @@ global vANATOMYPATH
 ipROI = roiCheck(ipROI); 
 
 % Get voxel sizes to make sure that the transformation preserves volume
-ipVoxSize = viewGet(ipView, 'voxel size');
+ipVoxSize = mrSESSION.inplanes.voxelSize;
 volVoxSize = readVolAnatHeader(vANATOMYPATH);
 
 % Transform ROI coordinates
@@ -30,7 +30,7 @@ coords = xformROIcoords(ipROI.coords, xform, ipVoxSize, volVoxSize);
 
 if isempty(coords)
     % put a warning, but only if these aren't hidden views
-    if ~isequal(viewGet(ipView,'Name'), 'hidden') && ~isequal(viewGet(volView,'Name'), 'hidden')
+    if ~isequal(ipView.name, 'hidden') & ~isequal(volView.name, 'hidden');
         msg = sprintf(['No voxels from %s map to the volume view. ' ...
                        'No ROI created.'], ipROI.name);
         myWarnDlg(msg);    
@@ -40,7 +40,7 @@ if isempty(coords)
 end
 
 % Toss coords outside the volume
-volSize = viewGet(volView,'Size');
+volSize = viewSize(volView);
 indices = ((coords(1,:) >= 1) & (coords(1,:) <= volSize(1)) & ...
     (coords(2,:) >= 1) & (coords(2,:) <= volSize(2)) & ...
     (coords(3,:) >= 1) & (coords(3,:) <= volSize(3)));

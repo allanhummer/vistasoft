@@ -40,6 +40,7 @@ end
 
 % Extract rotation & scale matrix. We have set things up so that the scales
 % should be 1.
+
 img2stdRot = round(img2std(1:3,1:3));
 
 % Note that we have constructed this transform matrix so that it will only
@@ -61,7 +62,7 @@ if(exist('mmPerVox','var'))
 else
     mmPerVoxNew = [];
 end
-
+tmp=['X','Y','Z']; 
 % Allow >3 dims- just leave the extra dims alone.
 img = permute(img, [dimOrder, 4, 5]);
 

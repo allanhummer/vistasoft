@@ -1,8 +1,8 @@
-function [myValsFgWa, SuperFiber, weightsNormalized, weights, fgResampled] = ...
+function [myValsFgWa, SuperFiber, weightsNormalized, weights] = ...
     dtiFiberGroupPropertyWeightedAverage(fg, dt, numberOfNodes, valNames, p)
 % Average eigenvalues across the fibers, along the bundle length
 %
-% [eigValFG,SuperFiber, weightsNormalized, weights, fgResampled] = ...
+% [eigValFG,SuperFiber, weightsNormalized] = ...
 %   dtiFiberGroupPropertyWeightedAverage(fg, dt, numberOfNodes, valNames)
 %
 % The average is weighted with a gaussian kernel, where fibers close to the
@@ -33,11 +33,9 @@ function [myValsFgWa, SuperFiber, weightsNormalized, weights, fgResampled] = ...
 %                     denoting, how much each node in each fiber
 %                     contributed to the output tensor stats.
 % weights           - numberOfNodes by numberOfFibers array of weights
-%                     denoting, the gausssian distance of each node in
+%                     denoting, the gausssian distance of each node in 
 %                     each fiber from the fiber tract core
-% fgResampled       - The fiber group that has been resampled to
-%                     numberOfNodes and each fiber has been reoriented to
-%                     start and end in a consitent location
+%                     
 %
 % WEB RESOURCES:
 %       mrvBrowseSVN('dtiFiberGroupPropertyWeightedAverage');
@@ -69,11 +67,11 @@ numfibers = size(fg.fibers, 1);
 % This function will resample the fibers to numberOfNodes and will also
 % reorient some fibers, so the notion of "first" and "last" may end up
 % converted. [fg] returned in the line below will be resampled and reoriented.  
-[SuperFiber, fgResampled] = dtiComputeSuperFiberRepresentation(fg, [], numberOfNodes);
+[SuperFiber, fg] = dtiComputeSuperFiberRepresentation(fg, [], numberOfNodes);
 
 % Each fiber is represented by numberOfNodes, so can easily loop over 1st
 % node, 2nd, etc...
-fc = horzcat(fgResampled.fibers{:})';
+fc = horzcat(fg.fibers{:})'; 
 
 % Preallocate weights when you understand its size
 % weights = zeros(numberOfNodes,???)

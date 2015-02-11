@@ -32,33 +32,33 @@ switch(computer)
         % Copy the three dll files to the system folder.  We should check
         % some day whether these are actually necessary.
         disp('Checking for visualization library (.dll) files.');
-        if isempty(dir('C:\\Windows\System32\msvcp70.dll'))
+        if isempty(dir('C:\\Windows\system32\msvcp70.dll'))
             disp('You are missing msvcp70.dll.');
 
             s = fullfile(mrvRootPath,'Utilities','installation-dll','msvcp70.dll');
-            dest = 'C:\Windows\System32\msvcp70.dll';
+            dest = 'C:\Windows\system32\msvcp70.dll';
             [status,message] = copyfile(s,dest);
             if ~status, disp(message),disp('msvcp70.dll copy failed!!!')
             else                 disp('msvcp70.dll copied to system folder')
             end
         end
 
-        if isempty(dir('C:\\Windows\System32\msvcr70.dll'))
+        if isempty(dir('C:\\Windows\system32\msvcr70.dll'))
             disp('You are missing msvcr70.dll.');
 
             s = fullfile(mrvRootPath,'Utilities','installation-dll','msvcr70.dll');
-            dest = 'C:\Windows\System32\msvcr70.dll';
+            dest = 'C:\Windows\system32\msvcr70.dll';
             [status,message] = copyfile(s,dest);
             if ~status, disp(message),disp('msvcr70.dll copy failed!!!')
             else                 disp('msvcr70.dll copied to system folder')
             end
         end
 
-        if isempty(dir('C:\\Windows\System32\msvcr70d.dll'))
+        if isempty(dir('C:\\Windows\system32\msvcr70d.dll'))
             disp('You are missing msvcr70d.dll.');
 
             s = fullfile(mrvRootPath,'Utilities','installation-dll','msvcr70d.dll');
-            dest = 'C:\Windows\System32\msvcr70d.dll';
+            dest = 'C:\Windows\system32\msvcr70d.dll';
             [status,message] = copyfile(s,dest);
             if ~status, disp(message),disp('msvcr70d.dll copy failed!!!')
             else                 disp('msvcr70d.dll copied to system folder')

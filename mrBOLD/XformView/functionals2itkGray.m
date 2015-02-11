@@ -41,7 +41,7 @@ else
     pth = vANATOMYPATH;
 end
 
-ni=niftiRead(pth);
+ni=readFileNifti(pth);
 
 ni.data = data;
 

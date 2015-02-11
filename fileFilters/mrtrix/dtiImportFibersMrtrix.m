@@ -18,20 +18,19 @@ function fg = dtiImportFibersMrtrix(filename, fiberPointStride)
 % fg = dtiImportFibersMrtrix('all_1000K.tck');
 % mtrExportFibers(fg, 'all_1000K.pdb', eye(4));
 %
-% Franco Pestilli and Bob Dougherty Stanford University 
+% HISTORY:
+% 2009.09.23 RFD wrote it.
+%
 
-% Strip out the file name.
-[~,f] = fileparts(filename);
-
-% Build an empty mrDiffusion fier group.
+[p,f,e] = fileparts(filename);
 fg = dtiNewFiberGroup(f);
+% Read a binary fiber tracking file output from mrTrix. Note that we assume
+% that the data are always little-endian. 
+fid = fopen(filename ,'r','ieee-le');
+if(fid==-1)
+    error('Unable to access file %s\n', filename);
+end
 
-% Read a binary fiber tracking file (.tck) output from mrTrix. 
-fid = fopen(filename ,'r','ieee-le'); % Note that we assume that the data 
-                                      % always little-endian. 
-if(fid==-1), error('Unable to access file %s\n', filename);end
-
-% Read the .tck file just opened.
 try
     % Read the text header, line-by-line, until the 'END' keyword. We'll
     % store all header fields in a cell array and then pull out the ones
@@ -77,6 +76,7 @@ catch
 end
 
 % Reshape the fibers to the mrDiffusion format
+
 tmp = tmp(1:end-6);
 tmp = reshape(tmp,3,numel(tmp)/3);
 

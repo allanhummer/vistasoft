@@ -65,7 +65,6 @@ fiberLength = cellfun('length',fg.fibers);
 coords = horzcat(fg.fibers{:})';
 
 % Get the anatomy 
-n               = dtiGet(handles,'bg num');
 curBgName       = dtiGet(handles,'bg name',n);
 curBg           = dtiGet(handles,'bg image',n);
 curBgValRange   = dtiGet(handles,'bg range',n);

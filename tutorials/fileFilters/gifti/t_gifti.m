@@ -1,8 +1,6 @@
 %% t_gifti
 %
 % Introduction to the gifti reader/writer.  
-% GIFTI is from
-% http://www.artefact.tk/software/matlab/gifti/
 %
 % The examples here 
 %
@@ -30,12 +28,12 @@ chdir(fullfile(mrvDataRootPath,'gifti','BV_GIFTI','Base64'));
 g = gifti('sujet01_Lwhite.surf.gii');
 
 % Blue shaded
-mrvNewGraphWin; plot(g);  
+figure; plot(g);  
 
 % The color overlay values are determined by an color map and a single
 % scaling (I think).
 gg = gifti('sujet01_Lwhite.shape.gii');
-mrvNewGraphWin; h = plot(g,gg);
+figure; h = plot(g,gg);
 
 
 %% 2. Read T1 anatomical and itkGray class file with both white and gray
@@ -46,7 +44,7 @@ mrvNewGraphWin; h = plot(g,gg);
 % meshes. The package (t1.nii.gz, left_gifti and right_gifti) are all used
 % by dtiquery as part of the visualization.
 %
-% We haven't yet mrvNewGraphWind out about loading the fibers properly.
+% We haven't yet figured out about loading the fibers properly.
 
 % Read the anatomical.  We will use the transform in qto_xyz for
 % coregistering.
@@ -70,18 +68,16 @@ Ds = uint8(niClass.data);
 %    4: right white matter
 %    6: right gray matter 
 
-% To get the boundary between white and gray in left hemisphere set the
-% labels for everything that is not left gray or white to unlabeled.
-Ds(Ds == 2) = 0;    % Subcortical
-Ds(Ds == 4) = 0;    % right white
-Ds(Ds == 6) = 0;    % right gray
+% To get the boundary between white and gray in left hemisphere, do this
+Ds(Ds == 2) = 0;
+Ds(Ds == 4) = 0;
+Ds(Ds == 6) = 0;
 % unique(Ds(:))
 
 % showMontage(double(Ds))
 g = gifti(isosurface(Ds,4));  % Matlab finds the gray/white boundary
 
-% Set the flag to indicate this is a left hemisphere.  This was explained
-% to me in an email from the author.
+% Set the flag to indicate this is a left hemisphere
 g.private.data{2}.metadata(1).name = 'AnatomicalStructurePrimary'; 
 g.private.data{2}.metadata(1).value = 'CortexLeft';
 
@@ -92,7 +88,7 @@ g.mat = niT1.qto_xyz([2 1 3 4],:);
 
 % Safe the GIFTI mesh
 save(g,'left_gifti.gii');
-% g = gifti('left_gifti.gii'); mrvNewGraphWin; h = plot(g); axis on; grid on
+% g = gifti('left_gifti.gii'); figure; h = plot(g); axis on; grid on
 
 %% Build the right gifti mesh.
 
@@ -111,7 +107,7 @@ g.private.data{2}.metadata(1).value = 'CortexRight';
 g.mat = niT1.qto_xyz([2 1 3 4],:);
 
 save(g,'right_gifti.gii');
-% g = gifti('right_gifti.gii'); mrvNewGraphWin; h = plot(g); axis on; grid on
+% g = gifti('right_gifti.gii'); figure; h = plot(g); axis on; grid on
 
 
 %% 3. Convert a typical class file to a gifti surface
@@ -131,14 +127,14 @@ Ds(Ds == 0) = 48;
 % showMontage(double(Ds))
 tmp = isosurface(Ds,20); 
 
-% mrvNewGraphWin; patch(tmp); shading faceted
+% figure; patch(tmp); shading faceted
 g = gifti(tmp);
-mrvNewGraphWin; plot(g)
+figure; plot(g)
 
 %% 4. Matlab calculations reducing the patches and computing normals
 fv = isosurface(Ds);
 fv = reducepatch(fv,.02);
-mrvNewGraphWin;
+figure;
 p1 = patch(fv, 'FaceColor','red','EdgeColor','none');
 
 isonormals(Ds,p1)
@@ -148,7 +144,7 @@ title('Triangle Normals')
 
 % Plots the surface using the normals, I think
 % fv.normals = isonormals(Ds,fv.vertices);
-mrvNewGraphWin;
+figure;
 p1 = patch(fv, 'FaceColor','red','EdgeColor','none');
 isonormals(Ds,p1)
 view(3); daspect([1 1 1]); axis tight
@@ -170,20 +166,20 @@ g.vertices = single(meshGet(msh,'vertices')');
 % We don't know how this is used.
 g.mat = eye(4,4);  
 % g.mat = rand(4,4);
-% mrvNewGraphWin; h = plot(g);
+% figure; h = plot(g);
 
 % we take the green channel and use a gray scale map.  Their algorithm
 % seems to normalize the color list and map it through the color map.
 cdata = meshGet(msh,'colors');
 cdata = cdata(2,:)';
 gg.cdata = single(cdata);
-mrvNewGraphWin; clf; colormap(gray); h = plot(g,gg);
+figure; clf; colormap(gray); h = plot(g,gg);
 
 %% Change the color map - I had some time on my hands.
 colormap(cool); pause(0.5)
 colormap(jet); pause(0.5)
 colormap(redGreenCmap); pause(0.5)
-colormap(blueyellowCmap); pause(0.5)
+colormap(blueYellowCmap); pause(0.5)
 
 % %Change lighting and such
 daspect([1,1,1]); view(45,30); axis tight
@@ -192,7 +188,7 @@ set(h,'SpecularColorReflectance',0,'SpecularExponent',50)
 [az,el] = view;
 g.mat = eye(4,4);  
 % g.mat = rand(4,4);
-% mrvNewGraphWin; h = plot(g);
+% figure; h = plot(g);
 
 g.private.data{2}.metadata(1).name = 'AnatomicalStructurePrimary'; 
 g.private.data{2}.metadata(1).value = 'CortexLeft';
@@ -227,7 +223,7 @@ g.vertices = single(meshGet(msh,'initVertices')');
 g.private.data{2}.metadata(1).name = 'AnatomicalStructurePrimary'; 
 g.private.data{2}.metadata(1).value = 'CortexLeft';
 save(g,'left_gifti.gii');
-% mrvNewGraphWin; h = plot(g); axis on; grid on
+% figure; h = plot(g); axis on; grid on
 
 % Now the right
 load(fullfile(mrvDataRootPath,'anatomy','T1andMesh','Right_Mesh_Unsmoothed.mat'));
@@ -243,7 +239,7 @@ g.private.data{2}.metadata(1).name = 'AnatomicalStructurePrimary';
 g.private.data{2}.metadata(1).value = 'CortexRight';
 
 save(g,'right_gifti.gii');
-% mrvNewGraphWin; h = plot(g);  axis on; grid on
+% figure; h = plot(g);  axis on; grid on
 
 % and actually, according to the specifications of the file format, you can
 % store metadata for the complete file as above or for a given DataArray: 
@@ -262,7 +258,7 @@ meshVisualize(msh);
 gFile = fullfile(mrvDataRootPath,'gifti','BV_GIFTI','Base64','sujet01_Lwhite.surf.gii');
 g = gifti(gFile);
 % Blue shaded
-% mrvNewGraphWin; plot(g);  
+% figure; plot(g);  
 
 % Seen with mrMesh - shading not yet right, but it comes up
 msh = meshCreate;

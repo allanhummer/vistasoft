@@ -57,7 +57,7 @@ if(strcmpi(f, 'coords') || strcmpi(e,'.mat'))
     if(nargout>2)
         % *** TODO: check to see if vSize should be reordered to match old
         % vAnat ordering.
-        ni = niftiRead(classFileName,[]);
+        ni = readFileNifti(classFileName,[]);
         vSize = ni.dim;
     end
 else

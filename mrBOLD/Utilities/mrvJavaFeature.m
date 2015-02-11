@@ -22,9 +22,6 @@ function javaFigs = mrvJavaFeature(javaFigs)
 %
 %  mrvJavaFeature(javaFigs);
 % 2007 by BAW. 
-warning('You are calling an obsolote function: mrvJavaFeature. Please remove it from your code.');
-javaFigs = []; 
-return;
 
 % If the person sent in a javaFigs variable, they want us to restore
 if notDefined('javaFigs'), javaFigs = []; 
@@ -38,7 +35,7 @@ matlabVersion = version.Version;
 mVersion = str2double(matlabVersion(1:3));
 mMinorVersion = str2double(matlabVersion(3:end));
 
-if ( (mVersion == 7) && (mMinorVersion < 4)) % version 7, < 7.4
+if ( (mVersion >= 7) && (mMinorVersion < 4)) % version 7, < 7.4
     javaFigs = feature('javafigures');
     if ispref('VISTA', 'javaOn') % seems to work diff't for diff't machines
         feature('javafigures', getpref('VISTA', 'javaOn'));

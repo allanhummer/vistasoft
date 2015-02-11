@@ -16,7 +16,7 @@ if (~exist('niftiFile','var') || isempty(niftiFile))
     niftiFile = fullfile(p,f);
 end
 
-ni = niftiRead(niftiFile);
+ni = readFileNifti(niftiFile);
 ni = niftiApplyCannonicalXform(ni);
 img = mrAnatHistogramClip(double(ni.data), 0.4, 0.98);
 
@@ -100,7 +100,7 @@ if(strcmpi(resp,'cancel'))
 end
 if(exist(outFile,'file'))
     clear ni;
-    ni = niftiRead(outFile);
+    ni = readFileNifti(outFile);
     ni = niftiApplyCannonicalXform(ni);
 else
     ni.fname = outFile;

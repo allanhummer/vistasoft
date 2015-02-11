@@ -60,16 +60,8 @@ switch vw.viewType
 			vw = percentTSeries(vw, getCurScan(vw), 1);
 		end
 		
-		[tmp, roiIndices, subIndices] = intersectCols(roiCoords, vw.coords);
-        
-        % The function intersectCols sorts the data, such that 
-        % subIndices will not index the time series in the same order as
-        % roiCoords. We would like to fix this, such that each column of
-        % subTSeries refers to the corresponding colum in roiCoords. This
-        % requires an additional sorting step.
-        [tmp, inds]  = sort(roiIndices);
-        subIndices   = subIndices(inds);
-		subTSeries   = vw.tSeries(:,subIndices);		
+		[inter, roiIndices, subIndices] = intersectCols(roiCoords, vw.coords);
+		subTSeries = vw.tSeries(:,subIndices);		
 		
 		if preserveCoords==1    
 			% enforce subTSeries size == ROI coords size
@@ -77,14 +69,13 @@ switch vw.viewType
 			% (slower than previous algorithm, but more robust)
 			nVoxels = size(roiCoords, 2);
 			nFrames = size(vw.tSeries, 1);
-			subTSeries = NaN([nFrames nVoxels]);
-			subIndices = NaN([1 nVoxels]);
-             
-            % GET RID OF THIS LOOP AND REPLACE WITH FASTER CODE
+			subTSeries = repmat(NaN, [nFrames nVoxels]);
+			subIndices = repmat(NaN, [1 nVoxels]);
 			for v = 1:size(roiCoords, 2)
- 				I = find( vw.coords(1,:) == roiCoords(1,v) & ...
- 						  vw.coords(2,:) == roiCoords(2,v) & ...
- 						  vw.coords(3,:) == roiCoords(3,v) );
+				I = find( vw.coords(1,:) == roiCoords(1,v) & ...
+						  vw.coords(2,:) == roiCoords(2,v) & ...
+						  vw.coords(3,:) == roiCoords(3,v) );
+				
 				if ~isempty(I)
 					% we index I by (1), because it's actually possible for
 					% it to have >1 entry. That is, it's possible for two

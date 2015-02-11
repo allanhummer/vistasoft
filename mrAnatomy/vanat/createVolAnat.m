@@ -57,7 +57,7 @@ if(strcmp(ext,'.hdr') | strcmp(ext,'.img'))
         img(:,:,jj) = fliplr(squeeze(img(:,:,jj)));
     end
 elseif(strcmp(ext,'.gz') | strcmp(ext,'.nii'))
-    ni = niftiRead(imgPathName);
+    ni = readFileNifti(imgPathName);
     img = permute(double(ni.data),[3,2,1]);
     mmPerPix = [ni.pixdim(3),ni.pixdim(2),ni.pixdim(1)];
     for(jj=1:size(img,3))

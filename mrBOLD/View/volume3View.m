@@ -23,9 +23,6 @@ function vw = volume3View(vw, loc, xHairs, quickUpdate)
 % to do: re-merge ras_recomputeImage with the regular recomputeImage.
 % 11/04 ras: added flipping axes option
 % 01/07 ras, bw: various ROI display options; trying to make it sensible
-
-%TODO: Remove the input argument 'quickUpdate' - is not used
-
 if ~exist('vw', 'var') || isempty(vw)
     vw = getSelectedVolume;
 end
@@ -71,9 +68,9 @@ cmap = mode.cmap;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % get images, apply phase/amp/param maps        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[vw, axi] = recompute3ViewImage(vw, loc(1), 1);
-[vw, cor] = recompute3ViewImage(vw, loc(2), 2);
-[vw, sag] = recompute3ViewImage(vw, loc(3), 3);
+[vw axi] = recompute3ViewImage(vw, loc(1), 1);
+[vw cor] = recompute3ViewImage(vw, loc(2), 2);
+[vw sag] = recompute3ViewImage(vw, loc(3), 3);
 
 % not needed for anything, but memory is cheap and may be useful:
 vw.ui.image = {axi cor sag};
@@ -189,12 +186,12 @@ end
 %              draw ROIs if selected            %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % remove any old ROI objects
-hOld = findobj('Tag', sprintf('ROI_Handles_%s', viewGet(vw,'Name')));
+hOld = findobj('Tag', sprintf('ROI_Handles_%s', vw.name));
 delete(hOld);
 
 % draw selected ROIs
 if isfield(vw,'ui') & logical(ui.showROIs ~= 0) ...
-        & ~isempty(vw.ROIs) & ~viewGet(vw, 'hideVolumeROIs')
+        & ~isempty(vw.ROIs) & ~viewGet(vw, 'hideVolumeROIs') %#ok<AND2>
 	roiList = viewGet(vw, 'ROIsToDisplay');
         
     drawROIs3View(vw, roiList, ui.axiAxesHandle, 1, loc);
@@ -289,7 +286,7 @@ for r = roiList
 		
         if isfield(ui, 'flipLR') && ui.flipLR==1 && ori<3
             % L/R flip affects columns of axi + coronal, but not sag, orientations
-            dims = viewGet(vw,'Size');
+            dims = viewSize(vw);
             pts(2,:) = dims(3) - pts(2,:);
         end
         

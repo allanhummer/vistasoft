@@ -1,22 +1,33 @@
 function val = mrmGet(msh,param,varargin)
-% Communicate parameter values with a mrMesh window.
 %
 %   val = mrmGet(msh,param,varargin)
 %
-% The general object mesh, typically a brain surface, contains  various
-% important parameters.  These include the identity of the host computer
-% running the mrMesh server (usually 'localhost') the number of the mrMesh
-% window the Actor (i.e., object) within the window
+% Author: Wandell
+% Purpose:
+%   Get parameter values from a mrMesh window.
 %
-% Actor values [0,31] are reserved with camera (0), cursor (1). New meshes
-% and lights are  assigned an actor value of 32 and above.
+%   This code is structured around the assumption that we are interacting
+%   with a mesh object (msh).  There are also calls, however, that are
+%   specific for managing the camera and lights.  In these cases, you can
+%   send in a dummy mesh with 
+%   msh.windowID = your window number
+%   msh.host     = 'localhost';
 %
-% The values in the mesh structure are accessed through the meshGet routine.
-% The same mesh structure is used by mrMesh, mrGray and mrFlatMesh.  Hence,
-% the mesh interface routines are kept in mrLoadRet-3.0\mrMesh\.
+%    The general object mesh, typically a brain surface, contains  various
+%    important parameters.  These include the identity of the host computer
+%    running the mrMesh server (usually 'localhost') the number of the
+%    mrMesh window the Actor (i.e., object) within the window 
 %
-% Some parameters require additional specification. These can be passed as
-% additional arguments that are parsed by the varargin mechanism.
+%    Actor values [0,31] are reserved with camera (0), cursor (1). 
+%    New meshes and lights are  assigned an actor value of 32 and above.
+%
+%    The values in the mesh structure are accessed through the meshGet routine.
+%    The same mesh structure is used by mrMesh, mrGray and mrFlatMesh.  Hence,
+%    the mesh interface routines are kept in mrLoadRet-3.0\mrMesh\.
+%
+%    Some parameters require additional specification. These can be
+%    passed as additional arguments that are parsed by the varargin
+%    mechanism.
 %
 % See also:  mrmSet, mrMesh, meshGet, meshSet
 %
@@ -24,28 +35,23 @@ function val = mrmGet(msh,param,varargin)
 %    l = mrmGet(msh,'listOfActors');
 %    cRot    = mrmGet(msh,'camerarotation');
 %    bColor  = mrmGet(msh,'background');
-%    d       = mrmGet(msh,'data');
-%
-% BW (c) Copyright Stanford VISTASOFT Team
+%    d        = mrmGet(msh,'data');
 
 % Programming Notes
-%   * See mrmSet TODO List.
-%   * Because mesh is a Matlab command, use the variable
-%   name msh for the mesh parameter.
+%   See mrmSet TODO List
+%   Because mesh is a Matlab command, use msh for the mesh parameter.
 %
 
-%% Default parameters
+% Default parameters
+
+
 if ieNotDefined('msh'), error('You must specify a mesh.'); end
-val = [];
 
 host = meshGet(msh,'host'); 
 if isempty(host), host = 'localhost'; end
 
-windowID = meshGet(msh,'window id'); 
+windowID = meshGet(msh,'windowid'); 
 if isempty(windowID)|| windowID == -1, error('Mesh must specify a window'); end
-
-%%
-param = mrvParamFormat(param);
 
 switch lower(param)
     case 'help'
@@ -70,12 +76,7 @@ switch lower(param)
         else p.actor = varargin{1}; end
         p.get_vertices = 1;
         [tmp,foo,v] = mrMesh(host,windowID,'get',p);
-        if isempty(v)
-            
-            warning('No vertices returned');
-        else
-            val = v.vertices;
-        end
+        val = v.vertices;
     case {'meshtriangles','triangles'}
         % val = mrmGet(msh,'meshtriangles',actorID)
         % val = mrmGet(msh,'meshtriangles')
@@ -85,8 +86,8 @@ switch lower(param)
         [tmp,foo,v] = mrMesh(host,windowID,'get',p);
         val = v.triangles;
     case {'normals','meshnormals'}
-        % val = mrmGet(msh,'mesh normals',actorID)
-        % val = mrmGet(msh,'mesh normals');
+        % val = mrmGet(msh,'meshnormals',actorID)
+        % val = mrmGet(msh,'meshnormals')
         if isempty(varargin), p.actor = actorCheck(msh); 
         else p.actor = varargin{1}; end
         p.get_normals = 1;
@@ -124,7 +125,7 @@ switch lower(param)
         p.get_all = 1;
         [tmp,foo,val] = mrMesh(host,windowID,'get',p);
     case {'allactors','actorlist','listofactors'}
-        % val = mrmGet(msh,'actor list');
+        % val = mrmGet(msh,'actorlist');
         %
         % The camera is always actor 0. We don't returning that in this
         % list. The cursor appears to be 2-4?
@@ -253,8 +254,9 @@ return;
 %----------------------
 
 function actor = actorCheck(msh)
-% We need to know which actor corresponds to this mesh. I wrote this
-% routine rather than repeating the test throughout the code.
+%
+% We need this a lot, so I wrote this routine rather than repeating it
+% throughout.
 %
 actor = meshGet(msh,'actor');
 

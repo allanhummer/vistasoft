@@ -1,10 +1,10 @@
-function [subCoords, ind] = roiSubCoords(vw,roiCoords)
+function [subCoords ind] = roiSubCoords(vw,roiCoords)
 %
 % [subCoords, indices] = roiSubCoords(vw,roiCoords)
 %
 % Given a set of coords as they're specified in an
 % inplane vw (i.e., in terms of the underlying inplane
-% image or viewGet(vw,'Size')), return a set of coords, also
+% image or viewSize(vw)), return a set of coords, also
 % relative to the viewSize, but subsampled, such that each
 % functional voxel is only referenced by a single coordinate.
 %

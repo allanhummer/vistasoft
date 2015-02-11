@@ -2,11 +2,8 @@ function vw=loadAnat(vw,pathStr)
 %
 % vw=loadAnat(vw,[pathStr])
 %
-% Loads anatomies and fills anat field in the view structure.
-% Load anat now reads in niftis in the Inplane view and automatically
-% applies and computes the necessary transform. In the inplane, no longer
-% loads or saves from/to 1.0anat.mat
-%
+% Loads anatomies and fills anat field in the view structure. 
+% vw = INPLANE: loads anat.mat
 % vw = VOLUME: loads vAnatomy.dat via loadVolAnat
 % path: optional arg to specify a pathname for the anatomy file
 %
@@ -16,22 +13,23 @@ function vw=loadAnat(vw,pathStr)
 %
 % 2.26.99 - Get anatomy path from getAnatomyPath - WAP
 
-mrGlobals;
+global mrSESSION;
+global HOMEDIR;
+global vANATOMYPATH;
 
-switch viewGet(vw,'View Type')
+switch vw.viewType
     
 case 'Inplane',
-
-    if ~exist('pathStr','var') %If does not exist, default to mrSESSION
-        pathStr = sessionGet(mrSESSION,'Inplane Path');
-    end
-    if ~exist('pathStr','var') || isempty(pathStr)
-        error(sprintf('No path has been specified or found in mrSESSION.\n'));
+    if ~exist('pathStr','var')
+        pathStr=fullfile(viewDir(vw),'anat.mat');
     end
     if ~exist(pathStr,'file')
-        error(['No file at the location: ',pathStr]);
+        myErrorDlg(['No ',pathStr,' file']);
     else
-        vw = viewSet(vw,'Anat Initialize',pathStr);
+%         fprintf('Loading anatomies from %s ...',pathStr);
+        load(pathStr);
+        vw.anat = anat;
+%         fprintf('done.\n');
     end
     
 case {'Volume','Gray','generalGray'}

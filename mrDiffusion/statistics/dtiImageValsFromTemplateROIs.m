@@ -30,9 +30,9 @@ end
 
 for jj=1:length(imPath)
     %Read Image
-    im=niftiRead(imPath{jj});
+    im=readFileNifti(imPath{jj});
     %Read ROIs from nifti
-    tmp=niftiRead(tmpPath{jj});
+    tmp=readFileNifti(tmpPath{jj});
     %reslice image to match template dimensions
     [newImg,xformImg] = mrAnatResliceSpm(im.data, inv(im.qto_xyz), [], [1 1 1],[7 7 7 0 0 0],0);
     [newTmp,xformTmp] = mrAnatResliceSpm(tmp.data, inv(tmp.qto_xyz), [], [1 1 1], [0 0 0 0 0 0], 0);

@@ -20,7 +20,7 @@ if notDefined('hemisphere'), hemisphere = 'left'; end
 if notDefined('numGrayLayers'), numGrayLayers = 0; end
 if notDefined('inflateFlag'), inflateFlag = 0; end
 
-classNi = niftiRead(NiftiClassFile);
+classNi = readFileNifti(NiftiClassFile);
 class   = readClassFile(classNi,0,0,hemisphere);
 [nodes,edges,classData] = mrgGrowGray(class,numGrayLayers);
 
@@ -38,9 +38,6 @@ meshVisualize(msh);
 
 return;
 
-
-%% Extra for debugging
-
 % To Save the mrGray class file
 class.header.minor = 1;
 writeClassFile(class,'right.Class');
@@ -49,7 +46,7 @@ writeClassFile(class,'right.Class');
 
 NiftiClassFile='/biac2/wandell2/data/anatomy/dougherty/t1_class.nii.gz';
 hemisphere='left'
-classNi = niftiRead(NiftiClassFile);
+classNi = readFileNifti(NiftiClassFile);
 class = readClassFile(classNi,0,0,hemisphere);
 [nodes,edges,classData] = mrgGrowGray(class,3);
 wm = uint8( (classData.data == classData.type.white) | (classData.data == classData.type.gray));

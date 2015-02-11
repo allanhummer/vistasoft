@@ -17,6 +17,7 @@ function [xformVAnatToAcpc] = dtiXformVanatCompute(dtiT1, dtiT1ToAcpcXform, vAna
 % converts vAnatomy coords to acpc coords.
 
 if(~exist('vAnatTal','var')), vAnatTal = []; end
+
 if(~exist('scaleFlag','var')||isempty(scaleFlag)), scaleFlag = false; end
 
 disp('Coregistering (using SPM tools)...');
@@ -59,6 +60,7 @@ f.sep = [4 2];
 f.fwhm = [7 7];
 f.params = [0 0 0 0 0 0];
 if(scaleFlag) f.params(7:9) = [1 1 1]; end
+
 rotTrans = spm_coreg(VG,VF,f);
 xformVAnatToAcpc = spm_matrix(rotTrans(end,:));
 xformVAnatToAcpc = xformVAnatToAcpc\VF.mat;

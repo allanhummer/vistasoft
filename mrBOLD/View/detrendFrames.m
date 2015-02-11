@@ -1,4 +1,4 @@
-function smoothFrames = detrendFrames(vw,scan)
+function smoothFrames = detrendFrames(view,scan)
 % Number of frames used for the detrending (smoothing?) calculation 
 %
 %    smoothFrames = detrendFrames(view,[scan])
@@ -10,12 +10,19 @@ function smoothFrames = detrendFrames(vw,scan)
 %   viewGet(view,'detrendFrames',scan)
 %
 
-if notDefined('scan'), scan = viewGet(vw,'curScan'); end
+if notDefined('scan'), scan = viewGet(view,'curScan'); end
 
-dt    = viewGet(vw,'dtStruct');
+dt    = viewGet(view,'dtStruct');
 aType = dtGet(dt,'eventOrBlock',scan);
 
-smoothFrames = dtGet(dt,'smoothFrames',scan,vw);
+switch aType
+    case 'event'
+        smoothFrames = dtGet(dt,'smoothFrames',scan);
+    case 'block'
+        smoothFrames = dtGet(dt,'smoothFrames',scan,view);
+    otherwise
+        error('Unknown analysis %s\n',aType);
+end
 
 return;
 

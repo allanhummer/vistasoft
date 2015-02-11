@@ -5,6 +5,9 @@ function M = rmPlotGUI_openFig(M)
 %
 % ras, 11/2008.
 
+% switch for dealing with java figures
+javaFigs = mrvJavaFeature;
+
 %% open the figure
 figName = sprintf('rmPlotGUI %s (%s)', M.roi.name, M.dataType);
 M.fig = figure('Color', 'w', 'Name', figName, ...
@@ -144,13 +147,15 @@ M = rmPlotGUI_menus(M);
 set(M.fig, 'UserData', M);
 rmPlotGUI_update;
 
+mrvJavaFeature(javaFigs);
+
 return
 %--------------------------------------
 
 
 
 %--------------------------------------
-function M = rmPlotGUI_menus(M)
+function M = rmPlotGUI_menus(M);
 %% add menus to the GUI window.
 set(M.fig, 'MenuBar', 'none');
 M.ui.menus = uimenu(M.fig, 'Label', 'PRF Plot Options', 'Separator', 'on');

@@ -1,4 +1,4 @@
-function [subdata, indices] = getCurDataROI(vw, fieldname, scan, roi)
+function [subdata indices] = getCurDataROI(vw, fieldname, scan, roi)
 %
 % [subdata indices]  = getCurDataROI(vw, <fieldname>, <scan>, <roi>)
 %
@@ -51,7 +51,7 @@ if notDefined('roi'),       roi = viewGet(vw, 'curRoi');      end
 
 roi = tc_roiStruct(vw, roi);
 
-switch viewGet(vw,'View Type')
+switch vw.viewType
     
 case 'Inplane'
     % Pull out data for this scan
@@ -81,7 +81,7 @@ case {'Volume','Gray'}
     
     % Intersect the two sets of indices, filling in data for the
     % intersection, NaNs for ROI voxels where there's no data.
-    [commonCoords, indRoi, indView] = intersectCols(roi.coords, vw.coords); %#ok<ASGLU>
+    [commonCoords indRoi indView] = intersectCols(roi.coords, vw.coords); %#ok<ASGLU>
     subdata = NaN([1 size(roi.coords,2)]);
     if ~isempty(data)
         subdata(indRoi) = data(indView);
@@ -96,7 +96,7 @@ case 'Flat'
     % Pull out data for this scan
     data = getCurData(vw,fieldname,scan);
     % Construct subdata for voxels in ROI
-    indices = coords2Indices(roi.coords,viewGet(vw,'Size'));
+    indices = coords2Indices(roi.coords,viewSize(vw));
     if ~isempty(data)
         subdata = data(indices);   
     else

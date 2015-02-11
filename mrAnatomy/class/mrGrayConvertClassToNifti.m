@@ -83,8 +83,9 @@ disp(['NIFTI classification will be saved in ' outFileName]);
 %% Read the data
 % Allow t1NiftiFile and mrGrayClassFile to be passed as either filenames or
 % structs that have already been loaded from file.
+
 if(~isstruct(t1NiftiFile))
-    t1NiftiFile = niftiRead(t1NiftiFile);
+    t1NiftiFile = readFileNifti(t1NiftiFile);
 end
 
 [vAnat,vAnatMm] = readVolAnat(vAnatFile);
@@ -95,15 +96,14 @@ end
 
 %% Find the xForm between the vAnatomy data and the T1 NIFTI file data
 [xformVAnatToAcpc] = dtiXformVanatCompute(t1NiftiFile.data, t1NiftiFile.qto_xyz, vAnat, vAnatMm, [], adjustScales);
-
-% Create a bounding box identical to the nifti file bb.
+% Creat a bounding box identical to the nifti file bb.
 bb = mrAnatXformCoords(t1NiftiFile.qto_xyz, [1 1 1; t1NiftiFile.dim]);
 xform    = inv(xformVAnatToAcpc);
 mm       = t1NiftiFile.pixdim;
 interp   = [1 1 1 0 0 0];
 outXform = t1NiftiFile.qto_xyz;
 sz       = t1NiftiFile.dim;
-vAnatSize = size(vAnat); %#ok<NASGU>
+vAnatSize = size(vAnat);
 save([outFileBaseName '_xformToVanat.mat'],'sz','bb','mm','xform','vAnatSize');
 
 % If you are concerned and want to check the alignments at this point use:

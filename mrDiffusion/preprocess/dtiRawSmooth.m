@@ -87,7 +87,7 @@ end
 if(ischar(dwRaw))
     % dwRaw can be a path to the file or the file itself
     disp(['Loading raw data ' dwRaw '...']);
-    dwRaw = niftiRead(dwRaw);
+    dwRaw = readFileNifti(dwRaw);
 end
 
 nvols = size(dwRaw.data,4);

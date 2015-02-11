@@ -24,7 +24,7 @@ if ieNotDefined('faNiftiFile')
     if(isnumeric(f)), disp('Conversion canceled.'); return; end
     faNiftiFile = fullfile(p,f); 
 end
-nifa = niftiRead(faNiftiFile);
+nifa = readFileNifti(faNiftiFile);
 mmPerVox = nifa.pixdim;
 xformToAcpc = nifa.qto_xyz;
 scene_dim = size(nifa.data);

@@ -29,101 +29,78 @@ function ni = niftiCreate(varargin)
 %
 % Copyright Stanford team, mrVista, 2011
 
-%% These fields are the ones used in the m-file niftiRead
+%% These fields are the ones used in the m-file readFileNifti
 
 % Initialize the VISTASOFT nifti structure with default parameters. 
 ni = niftiStructure;
 
 % If there is
 if ~isempty(varargin)
-    for ii = 1:2:(length(varargin)-1)
-        param = mrvParamFormat(varargin{ii});
-        if isfield(ni,param) || strcmpi('tr',param)
-            val = varargin{ii+1};
-            switch param
-                case {'data'}
-                    ni.(param) = val;
-                    ni.dim     = size(val);
-                    ni.ndim    = length(ni.dim);
-                    ni.pixdim  = ones(1,ni.ndim);
-                    ni.cal_min = min(min(min(min(val))));
-                    ni.cal_max = max(max(max(max(val))));
-                    ni.data_type = niftiClass2DataType(class(val));
+  for ii = 1:2:(length(varargin)-1)
+    param = mrvParamFormat(varargin{ii});
+    if isfield(ni,param)
+      val = varargin{ii+1};
+      switch param
+        case {'data'}
+        ni.(param) = val;
+        ni.dim     = size(val);
+        ni.ndim    = length(ni.dim);
+        ni.pixdim  = ones(1,ni.ndim);
+        ni.cal_min = min(min(min(min(val))));
+        ni.cal_max = max(max(max(max(val))));
+        ni.data_type = niftiClass2DataType(class(val));
+        
+        case {'qto_xyz','sto_xyz'}
+        ni.qto_xyz = val;
+        ni.qto_ijk = inv(val);
+        ni.sto_xyz = val;
+        ni.sto_ijk = inv(val);
+        
+        quat_params  = matToQuat(ni.qto_xyz);
+        ni.quatern_b = quat_params.quatern_b;
+        ni.quatern_c = quat_params.quatern_c;
+        ni.quatern_d = quat_params.quatern_d;
+        ni.qoffset_x = quat_params.quatern_x;
+        ni.qoffset_y = quat_params.quatern_y;
+        ni.qoffset_z = quat_params.quatern_z;
+        ni.qfac      = quat_params.qfac;
+
+        ni.pixdim(1:3) = [quat_params.dx quat_params.dy quat_params.dz];
+
+        case {'qto_ijk','sto_ijk'}
+        ni.qto_xyz = inv(val);
+        ni.qto_ijk = val;
+        ni.sto_xyz = inv(val);
+        ni.sto_ijk = val;
                     
-                case {'qto_xyz','sto_xyz'}
-                    ni.qto_xyz = val;
-                    ni.qto_ijk = inv(val);
-                    ni.sto_xyz = val;
-                    ni.sto_ijk = inv(val);
-                    
-                    quat_params  = matToQuat(ni.qto_xyz);
-                    ni.quatern_b = quat_params.quatern_b;
-                    ni.quatern_c = quat_params.quatern_c;
-                    ni.quatern_d = quat_params.quatern_d;
-                    ni.qoffset_x = quat_params.quatern_x;
-                    ni.qoffset_y = quat_params.quatern_y;
-                    ni.qoffset_z = quat_params.quatern_z;
-                    ni.qfac      = quat_params.qfac;
-                    
-                    ni.pixdim(1:3) = [quat_params.dx quat_params.dy quat_params.dz];
-                    
-                case {'qto_ijk','sto_ijk'}
-                    ni.qto_xyz = inv(val);
-                    ni.qto_ijk = val;
-                    ni.sto_xyz = inv(val);
-                    ni.sto_ijk = val;
-                    
-                    quat_params  = matToQuat(ni.qto_xyz);
-                    ni.quatern_b = quat_params.quatern_b;
-                    ni.quatern_c = quat_params.quatern_c;
-                    ni.quatern_d = quat_params.quatern_d;
-                    ni.qoffset_x = quat_params.quatern_x;
-                    ni.qoffset_y = quat_params.quatern_y;
-                    ni.qoffset_z = quat_params.quatern_z;
-                    ni.qfac      = quat_params.qfac;
-                    
-                    ni.pixdim(1:3) = [quat_params.dx quat_params.dy quat_params.dz];
-                    
-                case {'freq_dim'}
-                    ni.freq_dim	 = val(1);
-                    ni.phase_dim = val(2);
-                    ni.slice_dim = val(3);
-                    
-                case {'slice_code'} 
-                    ni.slice_code     = val(1);
-                    ni.slice_start    = val(2);
-                    ni.slice_end      = val(3);
-                    ni.slice_duration = val(4);
-                    
-                case {'tr'}
-                    if(ni.ndim>=4)
-                        if(~isempty(val))
-                            ni.pixdim(4) = val;
-                        elseif(ni.dim(4)>1)
-                            % Don't bother issuing a warning if the 4th dim has only one
-                            % volume. This would be the case, e.g., for DTI data, where the
-                            % matrix elements are in the 5th dim and 4th dim is size 1.
-                            disp('Data appear to be a timeseries, but the TR was not specified. Setting it to 1.');
-                        end
-                    end
-                    
-                case {'data_type'}
-                    % val is a string and it is converted to a number
-                    ni.(param) = niftiClass2DataType(val);
-                    % If there are no data, everything is OK.
-                    % If there are data, make sure that the data class matches what
-                    % we just set.
-                    if ~strcmpi(class(ni.data),val) && ~isempty(ni.data)
-                        error('[%s] Attempting to set the nifti data type to different type than the data type.',mfilename)
-                    end
-                    
-                otherwise
-                    ni.(param) = val;
+        quat_params  = matToQuat(ni.qto_xyz);
+        ni.quatern_b = quat_params.quatern_b;
+        ni.quatern_c = quat_params.quatern_c;
+        ni.quatern_d = quat_params.quatern_d;
+        ni.qoffset_x = quat_params.quatern_x;
+        ni.qoffset_y = quat_params.quatern_y;
+        ni.qoffset_z = quat_params.quatern_z;
+        ni.qfac      = quat_params.qfac;
+        
+        ni.pixdim(1:3) = [quat_params.dx quat_params.dy quat_params.dz];
+
+        case {'data_type'}
+            % val is a string and it is converted to a number
+            ni.(param) = niftiClass2DataType(val);
+            % If there are no data, everything is OK.
+            % If there are data, make sure that the data class matches what
+            % we just set.
+            if ~strcmpi(class(ni.data),val) && ~isempty(ni.data)
+                error('[%s] Attempting to set the nifti data type to different type than the data type.',mfilename)
             end
-        else
-            error('[%s] No field name %s\n',mfilename, param);
-        end
+          
+        otherwise
+        ni.(param) = val;
+      end
+    else
+      error('[%s] No field name %s\n',mfilename, param);
     end
+  end
 end
 
 end % End main function

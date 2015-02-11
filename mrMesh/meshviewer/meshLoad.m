@@ -1,11 +1,11 @@
-function [vw, OK] = meshLoad(vw, mshFileName, displayFlag)
+function [view, OK] = meshLoad(view, mshFileName, displayFlag)
 % Load mesh from a file and add it to the 3D gray view.
 %
-%  [vw, OK] = meshLoad(vw, mshFileName, [displayFlag=0]);
+%  [view, OK] = meshLoad(view, mshFileName, [displayFlag=0]);
 %
 % When we load the mesh, we also compute the vertexGrayMap on the fly.
 % This defines the mapping from the mesh vertices into gray matter for
-% that particular data set (defined in vw).
+% that particular data set (defined in view).
 %
 % If the mesh filename is provided as a directory, will prompt the user for 
 % a mesh file, starting in that directory. If it is set as 'firstmesh', it 
@@ -17,23 +17,23 @@ function [vw, OK] = meshLoad(vw, mshFileName, displayFlag)
 %
 % ras, 11/07: added display flag.
 
-if notDefined('vw'),            vw = getCurView;                      end
-if notDefined('mshFileName'),   mshFileName = viewGet(vw, 'meshdir'); end
-if notDefined('displayFlag'),	displayFlag = 0;					  end
+if notDefined('view'),			view = getCurView;					end
+if notDefined('mshFileName'), mshFileName = viewGet(view, 'meshdir'); end
+if notDefined('displayFlag'),	displayFlag = 0;					end
 
 OK = 1;
 
 if ismember(lower(mshFileName), {'firstmesh' 'newest' 'mostrecent'})
-	meshDir = viewGet(vw, 'MeshDir');
+	meshDir = viewGet(view, 'MeshDir');
 	w = dir( fullfile(meshDir, '*.mat') );
-	[meshFiles, I]= setdiff({w.name}, {'MeshSettings.mat' 'MeshAngles.mat'});
+	[meshFiles I]= setdiff({w.name}, {'MeshSettings.mat' 'MeshAngles.mat'});
 		
 	if isempty(meshFiles)
 		error('No mesh files in the mesh directory: %s\n', meshDir);
 	else
 		if ismember(lower(mshFileName), {'newest' 'mostrecent'})
 			% find most recent mesh file
-			[dates, order] = sortrows( datevec({w(I).date}) ); %#ok<ASGLU>
+			[dates order] = sortrows( datevec({w(I).date}) ); %#ok<ASGLU>
 			mshFileName = fullfile(meshDir, meshFiles{ order(end) });
 		else
 			% find first in list
@@ -55,15 +55,15 @@ msh = meshFormat(msh);
 if ispref('VISTA', 'autoComputeV2GMap')
 	autoComputeV2G = getpref('VISTA', 'autoComputeV2GMap');
 else
-	autoComputeV2G = false;
+	autoComputeV2G = 0;
 end
 
 if isempty(meshGet(msh,'vertexGrayMap')) || autoComputeV2G
     vertexGrayMap = mrmMapVerticesToGray(...
         meshGet(msh, 'initialvertices'),...
-        viewGet(vw, 'nodes'),...
-        viewGet(vw, 'mmPerVox'),...
-        viewGet(vw, 'edges'));
+        viewGet(view, 'nodes'),...
+        viewGet(view, 'mmPerVox'),...
+        viewGet(view, 'edges'));
 
     msh = meshSet(msh, 'vertexgraymap', vertexGrayMap);
 end
@@ -74,9 +74,9 @@ if(ispref('VISTA','autoComputeG2VMap'))
         disp('Computing g2vmap for mesh');
         if isempty(meshGet(msh,'grayVertexMap'))
             grayVertexMap = mrmMapGrayToVertices(...
-                viewGet(vw, 'nodes'),...
+                viewGet(view, 'nodes'),...
                 meshGet(msh, 'initialvertices'),...
-                viewGet(vw, 'mmPerVox'));
+                viewGet(view, 'mmPerVox'));
             msh = meshSet(msh, 'grayvertexmap', grayVertexMap);
         end
     end
@@ -92,6 +92,6 @@ if displayFlag==1
 	mrmSet(msh, 'cursoroff');  % a preference ... feel free to change back
 end
 
-vw = viewSet(vw, 'addandselectmesh', msh);
+view = viewSet(view, 'addandselectmesh', msh);
 
 return;

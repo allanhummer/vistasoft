@@ -4,7 +4,7 @@ fname = 't1_man_seg_class.nii.gz';
 hemi = 'left';
 s = 2;
 
-ni = niftiRead(fname);
+ni = readFileNifti(fname);
 l = mrGrayGetLabels;
 
 % Process left hemisphere

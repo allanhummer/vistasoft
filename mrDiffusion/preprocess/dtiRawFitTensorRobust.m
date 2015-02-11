@@ -1,29 +1,20 @@
 function dt6FileName = dtiRawFitTensorRobust(dwRaw, bvecs, bvals, ... 
                        outBaseName, brainMask, adcUnits, xformToAcPc, ... 
-                       nstep, clobber, noiseCalcMethod)
+                       nstep, clobber)
 % Fits a tensor to the raw DW data using the restore algorithm
 %
 % dt6FileName = dtiRawFitTensorRobust([dwRaw=uigetfile], ...
 %               [bvecsFile=uigetfile], [bvalsFile=uigetfile], ...
 %               [outBaseDir=uigetdir], [brainMask=''], ...
 %               [adcUnits=dtiGuessAdcUnits], [xformToAcPc=dwRaw.qto_xyz],
-%               ... [nstep=50], [noiseCalcMethod = 'corner']);
+%               ... [nstep=50]);
 %
 % The tensors are returned in [Dxx Dyy Dzz Dxy Dxz Dyz] format and are
-% saved in a dt6 file outBaseName 'dt6.mat'. This method works by first
-% calculating the noise in the image and then rejecting fits that are worse
-% than would be expected given the noise. There are 2 ways to calculate the
-% noise. The first is based on the standard deviation of the signal in the
-% corner of the image (noiseCalcMethod = 'corner'). This method works well
-% as long as the corner of the image has not been padded with zeros.
-% Currently GE zeros out the pixel intensity outside of the brain. So for
-% new GE data we calculate the noise by taking the standard deviation of
-% the b=0 images (noiseCalcMethod = 'b0') which means that we need a number
-% of b0 acquisitions.
+% saved in a dt6 file outBaseName 'dt6.mat'.
 %
 % Comments about the tensor formula and estimation are embedded in the
 % code, below.
-%
+
 % If adcUnits is not provided, we try to guess based on the magnitude
 % of the mean diffusivity. This guess is based on typical values for
 % in-vivo human brain tissue. Our preferred units are 'micron^2/msec',
@@ -49,8 +40,8 @@ function dt6FileName = dtiRawFitTensorRobust(dwRaw, bvecs, bvals, ...
 %      dtiRawFitTensor([f 'nii.gz'], [f 'bvecs'], [f 'bvals'], out, [], 'rt', mask);
 % 
 % Show outlier count as an overlay on the b0:
-%      aNi = niftiRead(fullfile(out,'bin','b0.nii.gz'));
-%      oNi = niftiRead(fullfile(out,'bin','outliers.nii.gz'));
+%      aNi = readFileNifti(fullfile(out,'bin','b0.nii.gz'));
+%      oNi = readFileNifti(fullfile(out,'bin','outliers.nii.gz'));
 %      aIm = mrAnatHistogramClip(double(aNi.data),0.4,0.98);
 %      oIm = double(sum(oNi.data,4));
 %      mrAnatOverlayMontage(oIm, oNi.qto_xyz, aIm, aNi.qto_xyz,...
@@ -77,7 +68,7 @@ end
 % Load the raw data
 if(ischar(dwRaw))
     disp(['Loading raw data ' dwRaw '...']);
-    dwRaw = niftiRead(dwRaw);
+    dwRaw = readFileNifti(dwRaw);
     weLoadedRaw = true;
     [dataDir,inBaseName] = fileparts(dwRaw.fname);
 else
@@ -123,9 +114,9 @@ if(exist(outBaseName,'dir'))
             
         if(strcmp(resp,'Cancel')), disp('canceled.'); return; end
     
-    elseif( exist(dt6FileName,'file') ...
-        || (exist(binDirName,'dir') ...
-        && ~isempty(dir(fullfile(binDirName,'*.nii*'))))) ...
+    elseif exist(dt6FileName,'file') ...
+        || exist(binDirName,'dir') ...
+        && ~isempty(dir(fullfile(binDirName,'*.nii*'))) ...
         && clobber ~= 1 ... 
         && clobber == -1
         disp('Tensor fitting already completed and "Clobber" is set to "false". Exiting tensor fit.'); 
@@ -164,9 +155,6 @@ if(~exist('xformToAcPc','var') || isempty(xformToAcPc))
     xformToAcPc = dwRaw.qto_xyz;
 end
 
-if ~exist('noiseCalcMethod','var') || isempty(noiseCalcMethod)
-    noiseCalcMethod = 'b0';
-end
 
 %% Load the bvecs & bvals
 % 
@@ -198,7 +186,7 @@ if(~isempty(brainMask))
     if(ischar(brainMask))
         % brainMask can be a path to the file or the nifti struct or an image
         disp(['Loading brainMask ' brainMask '...']);
-        brainMask = niftiRead(brainMask);
+        brainMask = readFileNifti(brainMask);
     end
     if(isstruct(brainMask))
         brainMask = uint8(brainMask.data);
@@ -239,27 +227,24 @@ b0 = int16(round(b0));
 %
 numVols   = size(dwRaw.data,4);
 brainInds = find(liberalBrainMask);
-% preallocate a 2d array (with a 2nd dimension that is a singleton). The
-% first dimension is the number of volumes and the 3rd is each voxel
-% (within the brain mask).
 data      = zeros(numVols,1,length(brainInds));
-
-% Loop over the volumes and assign the voxels within the brain mask to data
 for ii=1:numVols
     tmp = double(dwRaw.data(:,:,:,ii));
     data(ii,1,:) = tmp(brainInds);
 end
 
-%% Compute signal to noise estimate
+%% Compute signal noise estimate
+%
+% According to Henkelman (1985), the expected signal variance (sigma) can
+% be computed as 1.5267 * SD of the background (thermal) noise.
+sz = size(dwRaw.data);
+x  = 10;
+y  = 10;
+z  = round(sz(3)/2);
 
-% The default method is to calculate noise from the corner of the image.
-% However GE scanners pad the corner of the image with zeros so we need to
-% calculate noise from the variance of the b=0 images
-
-sigma = dtiComputeImageNoise(dwRaw, bvals, liberalBrainMask, noiseCalcMethod);
-if sigma==0
-    error('Noise estimate (sigma) is exactly zero; maybe try a different noiseCalcMethod?');
-end
+[x,y,z,s] = ndgrid(x-5:x+5, y-5:y:5, z-5:z+5, 1:sz(4));
+noiseInds = sub2ind(sz, x(:), y(:), z(:), s(:));
+sigma     = 1.5267 * std(double(dwRaw.data(noiseInds)));
 
 % Memory usage is tight- if we loaded the raw data, clear it now since
 % we've made the reorganized copy that we'll use for all subsequent ops.
@@ -322,7 +307,6 @@ data(data==0) = minVal;
 
 
 %% Fit the tensors using the RESTORE Algorithm
-
 % 
 nvox = size(data,3);
 q    = (bvecs.*sqrt(repmat(bvals,3,1)))';
@@ -333,7 +317,7 @@ X    = [ones(numVols,1) -q(:,1).^2 -q(:,2).^2 -q(:,3).^2 -2.*q(:,1).*q(:,2)...
 % 50 steps. Implemented in the loop @ ~li 340
 if notDefined('nstep'), nstep = 50; end
 
-fprintf('Fitting %d tensors with RESTORE [nstep=%s] (SLOW!)...\n',...
+fprintf('Fitting %d tensors with RESTORE [nstep=%s] (EXPERIMENTAL AND SLOW!)...\n',...
     nvox,num2str(nstep));
 
 gof      = zeros(1, nvox, 'int16');
@@ -373,8 +357,7 @@ clear logData;
 tic;
 
 % Options for fminsearch optimization
-options    = optimset('Display', 'off', 'MaxIter', 100,...
-                      'Algorithm','levenberg-marquardt');
+options    = optimset('Display', 'off', 'MaxIter', 100);
 sigmaSq    = sigma.^2;
 voxPerStep = ceil(nvox/nstep);
 
@@ -383,28 +366,21 @@ for jj=1:nstep
     s = (jj-1)*voxPerStep+1;
     e = min(s+voxPerStep,nvox); 
         for ii=s:e 
-            
-            % Use a nonlinear search to compute the tensor fit to the data.
-            % dtiRawTensorErr computes the difference between the tensor
-            % and the data
-            [x, resnorm] = lsqnonlin(@(x) dtiRawTensorErr(x, data(:,ii), ...
-                X, sigmaSq, false), A(:,ii), [], [], options);
+            [x, resnorm] = fminsearch(@(x) dtiRawTensorErr(x, data(:,ii), ...
+                X, sigmaSq, false), A(:,ii), options);
             
             residuals = data(:,ii)-exp(X*x);
             
-            % If any residuals are more than 3 standard deviations from the
-            % model prediction then redo the search downweigting that point
-            if(any(abs(residuals)>=sigma*3))
-                x = lsqnonlin(@(x) dtiRawTensorErr(x, data(:,ii), X, ...
-                    sigmaSq, true), A(:,ii), [], [], options);
+            if(any(residuals>=sigma*3))
+                x = fminsearch(@(x) dtiRawTensorErr(x, data(:,ii), X, ...
+                    sigmaSq, true), A(:,ii), options);
                 
                 residuals      = data(:,ii)-exp(X*x);
-                o              = abs(residuals)>sigma*3;
+                o              = residuals>sigma*3;
                 outliers(:,ii) = o;
                 
-                [x, resnorm] = lsqnonlin(@(x) dtiRawTensorErr(x,...
-                    data(~o,ii), X(~o,:), 1, false), A(:,ii), [], [], ...
-                    options);
+                [x, resnorm] = fminsearch(@(x) dtiRawTensorErr(x,...
+                    data(~o,ii), X(~o,:), sigmaSq, false), A(:,ii), options);
             end
             A(:,ii) = x;
             gof(ii) = int16(round(resnorm));
@@ -523,7 +499,7 @@ if(~isempty(gof))
     
     % Create summary image of outliers.nii.gz that can be viewed as an
     % image when loaded into DTIfiberUI.
-    outlierImage       = niftiRead(fullfile(ppBinDir,files.outliers));
+    outlierImage       = readFileNifti(fullfile(ppBinDir,files.outliers));
     outlierImage.data  = sum(outlierImage.data,4);
     outlierImage.fname = fullfile(ppBinDir,pBinDir,'outlier_sum_image.nii.gz');
     writeFileNifti(outlierImage);

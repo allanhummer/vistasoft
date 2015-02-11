@@ -71,7 +71,7 @@ end
 
 
 % Loads the 4D nifti data into variable 'ni'. 
-ni=niftiRead(FIRSTnifti);
+ni=readFileNifti(FIRSTnifti);
 
 % Make sure left and right aren't flipped
 ni = niftiApplyCannonicalXform(ni);

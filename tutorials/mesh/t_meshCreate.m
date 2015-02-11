@@ -1,24 +1,21 @@
 % t_meshCreate
 %
-%  How to create and visualize a mesh from classification data.
+% Tutorial on how to create and visualize a mesh from classification data.
 %
-% See also: t_meshFromClass.m, t_meshShow
+% Stanford VISTA
 %
-% BW (c) Stanford VISTASOFT Team
 
 %% Use a modern NIFTI class file (suggested)
 dataDir     = mrvDataRootPath;
-fName       = fullfile(dataDir, 'anatomy', 'anatomyNIFTI','t1_class.nii.gz');
-niftiImage  = niftiRead(fName, []);  % Read just the header
+classDir	= fullfile(dataDir, 'anatomy', 'anatomyNIFTI');
+fName       = fullfile(classDir, 't1_class.nii.gz');
+niftiImage  = readFileNifti(fName, []);  % Read just the header
 mmPerVox    = niftiImage.pixdim;         % Get the pixel size
 
 % Run the build code, perform smoothing/coloring
 msh = meshBuildFromClass(fName, mmPerVox, 'left'); % 'right' also works
-
-mrmBuildMeshMatlab
-
-% msh = meshSmooth(msh);
-% msh = meshColor(msh);
+msh = meshSmooth(msh);
+msh = meshColor(msh);
 
 % mshFile = fullfile(mrvDataRootPath,'anatomy','anatomyNIFTI','leftMesh.mat');
 % load(mshFile)
@@ -27,10 +24,9 @@ mrmBuildMeshMatlab
 meshVisualize(msh);
 
 %% Use an older mrGray anatomical data set where white was classified
-
-dataDir  = mrvDataRootPath;
+dataDir = mrvDataRootPath;
 classDir = fullfile(dataDir, 'anatomy', 'anatomyV', 'left');
-fName    = fullfile(classDir,'left.Class');
+fName = fullfile(classDir,'left.Class');
 
 % Run the build code, perform smoothing/coloring
 msh = meshBuildFromClass(fName, mmPerVox, 'left');

@@ -47,7 +47,7 @@ switch lower(ext)
         vSize           = size(img);
         formatStr       = 'analyze';
     case {'.nii','.gz'} % Nifti
-        nii       = niftiRead(filename);
+        nii       = readFileNifti(filename);
         img       = double(nii.data);
         mmPerPix  = nii.pixdim;
         vSize     = size(img);

@@ -96,7 +96,7 @@ alignedBvalsFile = [outBaseDir '.bvals'];
 dwAlignedRawFile = [outBaseDir '.nii.gz'];
 
 disp('loading raw data...');
-dwRaw = niftiRead(dwRawFileName);
+dwRaw = readFileNifti(dwRawFileName);
 oldPhaseDim = dwRaw.phase_dim;
 % *** FIXME: the canXform might need to be applied to bvecs.
 [dwRaw,canXform] = niftiApplyCannonicalXform(dwRaw);
@@ -223,7 +223,7 @@ else
 end
 
 clear dwRaw;
-dwRawAligned = niftiRead(dwAlignedRawFile);
+dwRawAligned = readFileNifti(dwAlignedRawFile);
 
 bs.n = numBootStrapSamples;
 % We'll use the non-realigned bvecs since we want to count bvecs that are

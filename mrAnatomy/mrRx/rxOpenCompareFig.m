@@ -1,9 +1,10 @@
-function rx = rxOpenCompareFig(rx)
+function rx = rxOpenCompareFig(rx);
 % rx = rxOpenCompareFig(rx);
 %
 % Open a window for the compareerence  volume.
 %
 % ras 02/05
+javaFigs = mrvJavaFeature;
 
 rx.ui.compareFig = figure('Color', 'w',...
                       'Name', 'mrRx Compare Interp/Ref',...
@@ -73,5 +74,7 @@ rxComparePrefsMenu(gcf);
       
 % by default, we'll show the comparison statistics     
 rx = rxShowStats(rx,1);  
+
+mrvJavaFeature(javaFigs);
 
 return

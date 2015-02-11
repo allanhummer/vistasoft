@@ -65,12 +65,23 @@ for iScan = 1:nScans
     nFrames = numFrames(vw,scan);
     dims = viewGet(vw, 'sliceDims',scan);
 
-    
     % Load tSeries from all slices into one big matrix
-    [~, ni] = loadtSeries(vw, scan);
-    volSeries = ni.data; clear ni;
+    volSeries = zeros([dims(1) dims(2) nSlices nFrames]);
+	if verbose > 1
+	    waitHandle = waitbar(0,'Loading tSeries from all slices.  Please wait...');
+	end
 
-	if verbose > 1, close(waitHandle); end
+	for slice = slices
+        if verbose>1, waitbar(slice/nSlices); end
+        ts = loadtSeries(vw,scan,slice);
+        for frame=1:nFrames
+            volSeries(:, :, slice, frame) = reshape(ts(frame,:),dims);
+        end
+	end
+	
+	if verbose > 1
+	    close(waitHandle)
+	end
 
     if scan == baseScan
         totalMot = 0;
@@ -100,36 +111,26 @@ for iScan = 1:nScans
             if verbose > 1, waitbar(frame/nFrames);  end
             % warp the volume putting an edge of 1 voxel around to avoid lost data
             volSeries(:,:,:,frame) = warpAffine3(volSeries(:,:,:,frame), M, NaN, 1);
-        end
+		end
 		if verbose > 1
 	        close(waitHandle)
 		end
     end % motion correct
 
 	% initialize a slot for the new time series
-	[newView, newScanNum] = initScan(newView, newDtName, [], {vw.curDataType scan});
+	[newView newScanNum] = initScan(newView, newDtName, [], {vw.curDataType scan});
 	
-    % Save tSeries    
-    numPixels = prod(viewGet(vw, 'slice dims'));
-    tSeries = zeros(nFrames, numPixels);
-    dimNum = numel(size(tSeries));
-    tSeriesFull = zeros([size(tSeries) length(slices)]);
+    % Save tSeries
+    tSeries = zeros(size(ts));
+    numPixels = size(tSeries,2);
 	if verbose > 1,    waitHandle = waitbar(0,'Saving tSeries...');	end
     for slice=slices
         if verbose > 1, waitbar(slice/nSlices);  end
         for frame=1:nFrames
             tSeries(frame, :) = reshape(volSeries(:,:,slice,frame), [1 numPixels]);
         end
-        %tSeriesFull = cat(dimNum + 1, tSeriesFull, tSeries);
-        tSeriesFull(:,:,slice) = tSeries;
-    end %for
-
-    if dimNum == 3
-        tSeriesFull = reshape(tSeriesFull,[1,2,4,3]);
-    end %if
-
-    
-    savetSeries(tSeriesFull, newView, newScanNum);
+        savetSeries(tSeries, newView, newScanNum, slice);
+	end
 	if verbose > 1,     close(waitHandle);  end
     clear volSeries
 	

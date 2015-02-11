@@ -11,16 +11,18 @@ if ieNotDefined('curSlice')
 	% Get curSlice from ui
 	curSlice = viewGet(vw, 'Current Slice');
 end
-dims = viewGet(vw,'Size');
 
-switch viewGet(vw,'View Type')
+dims = viewSize(vw);
+
+switch vw.viewType
 
   case 'Inplane'
-      slice = viewGet(vw,'Anatomy Current Slice',curSlice);
-      if isempty(slice)
-          disp('Warning: Anatomies not loaded');
-          slice = zeros(dims(1:2));
-      end
+    if ~isempty(vw.anat)
+      slice = vw.anat(:,:,curSlice);
+    else
+      disp('Warning: Anatomies not loaded');
+      slice = zeros(dims(1:2));
+    end
     
   case {'Volume','Gray','generalGray'}
     curSliceOri = getCurSliceOri(vw);

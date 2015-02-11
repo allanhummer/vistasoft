@@ -1,7 +1,8 @@
 function classNi = mrGrayConvertFirstToClass(firstNifti, fastNifti, outFileName, fastCsfWmGm, fastWmSmooth)
 % Generate an initial segmentation from FSL FIRST and FAST output.
+% mrGrayConvertFirstToClass(firstNifti, fastNifti, outFileName, fastCsfWmGm=[1 3 2])
+%
 % 
-%   mrGrayConvertFirstToClass(firstNifti, fastNifti, outFileName, fastCsfWmGm=[1 3 2])
 %
 %
 % 2007.12.21 RFD: wrote it.
@@ -11,8 +12,8 @@ function classNi = mrGrayConvertFirstToClass(firstNifti, fastNifti, outFileName,
 %       then merge it with an old class file. Eg:
 %       scgNi = mrGrayConvertFirstToClass('t1/t1_sgm_all_th4_first.nii.gz', [], []);
 %       l = mrGrayGetLabels;
-%       c = niftiRead('t1/t1_class.nii.gz');
-%       bm = niftiRead('t1/t1_mask.nii.gz');
+%       c = readFileNifti('t1/t1_class.nii.gz');
+%       bm = readFileNifti('t1/t1_mask.nii.gz');
 %       c.data(~bm.data) = 0;
 %       % Add a perimeter of CSF to ensure that the brain is encased in CSF.
 %       perim = imdilate(bm.data>0,strel('disk',5)) & bm.data==0;
@@ -31,9 +32,11 @@ function classNi = mrGrayConvertFirstToClass(firstNifti, fastNifti, outFileName,
 % 2010.10.21 LMP: Code now writes out a .lbl file, through mrGrayGetLabels.
 %       Also again assigns the CSF into a label (1). 
 % 
-% RFD (c) VISTASOFT Stanford Team  
+%       
 
-if ~exist('fastWmSmooth','var'), fastWmSmooth = 0;  end
+if ~exist('fastWmSmooth','var')
+    fastWmSmooth = 0;
+end
 
 if ~exist('firstNifti','var')
     opts = {'*.nii.gz;*.nii', 'NIFTI files'; '*.*','All Files (*.*)'};
@@ -77,10 +80,10 @@ else
     %outFileName = [];
 end
 if(ischar(firstNifti)&&~isempty(firstNifti))
-    firstNifti = niftiRead(firstNifti);
+    firstNifti = readFileNifti(firstNifti);
 end
 if(ischar(fastNifti)&&~isempty(fastNifti))
-    fastNifti = niftiRead(fastNifti);
+    fastNifti = readFileNifti(fastNifti);
 end
 % Make sure they are in cannonical orientation
 if(~isempty(fastNifti))

@@ -9,8 +9,8 @@ function [msh,class] = meshBuildFromClass(voxels,mmPerVox,hemisphere)
 %    If the file name (class file or nifti file) is entered, then the
 %    classification data in the file can be returned. 
 %
-% mmPerVox:    defaults to [1 1 1] (mm)
-% hemisphere:  'right' or 'left' or 'both'
+% mmPerVox: defaults to [1 1 1] (mm)
+% hemisphere: 'right' or 'left' or 'both'
 %
 % White matter values in the class or NIFTI file are the voxels with the
 % value 16.
@@ -31,18 +31,15 @@ function [msh,class] = meshBuildFromClass(voxels,mmPerVox,hemisphere)
 %   msh = meshColor(msh);
 %   meshVisualize(msh);
 %
-% Guillaume Bertello (c) Stanford VISTA Team
-
-% PROGRAMMING TODO:  
-%   Perhaps we should replace this function with the Matlab isosurface
-%   routine. See mrmBuildMeshMatlab.  In general, We would like to get rid
-%   of the VTK dependent mex-files for smooth, build, and color.  These can
-%   be replaced with matlab mesh functions. We want to reduce the mex file
-%   stuff to only the mrMesh related calls to the window.
+% Author: Guillaume Bertello
 %
+% (c) Stanford VISTA Team
+%
+
+% TODO:  Perhaps we should replace this function with the Matlab isosurface
+% routine. See mrmBuildMeshMatlab.
 % We would like the mesh vertices to coregister with the vAnatomy or NIFTI
 % T1 data.  We need to understand this better.
-%
 
 if ieNotDefined('mmPerVox'), mmPerVox = [1 1 1]; end
 if ieNotDefined('hemisphere'), hemisphere = 'left'; end

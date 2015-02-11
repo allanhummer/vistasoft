@@ -24,13 +24,13 @@ else                mrmSet(msh,'refresh');  % Is this necessary?
 end
 
 disp('mrmInitMesh: Add mesh actor...');
-msh = mrmSet(msh,'add actor');
+msh = mrmSet(msh,'addactor');
 
-msh = mrmSet(msh,'set data');
-mrmSet(msh,'origin lines',0);
+msh = mrmSet(msh,'setdata');
+mrmSet(msh,'originlines',0);
 
 origin = meshGet(msh,'origin');
-if ~isempty(origin), mrmSet(msh,'actor origin',origin); end
+if ~isempty(origin), mrmSet(msh,'actororigin',origin); end
 
 lights = meshGet(msh,'lights');
 if isempty(lights)

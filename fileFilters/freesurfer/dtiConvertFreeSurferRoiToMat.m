@@ -9,7 +9,7 @@ function dtiConvertFreeSurferRoiToMat(roiIm,roiNum,outname)
 
 %% load in image
 
-im=niftiRead(roiIm);
+im=readFileNifti(roiIm);
 
 %now we want to convert the image to a list of coordinates in acpc space
 %find roi index locations

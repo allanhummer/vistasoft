@@ -9,8 +9,8 @@ function dtiFixITKGrayHeader(fileName,RefFileName)
 
 
 % Read the Nifti Files
-ni = niftiRead(RefFileName);
-ni2 = niftiRead(fileName);
+ni = readFileNifti(RefFileName);
+ni2 = readFileNifti(fileName);
 
 %Fix Headers
 ni.fname = fileName;

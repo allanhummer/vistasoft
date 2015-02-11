@@ -1,14 +1,16 @@
 function status = mrmCloseWindow(windowID,host)
-%  Close a window on the host. 
 %
-%   status = mrmCloseWindow(windowID,host)
+%  status = mrmCloseWindow(windowID,host)
+%
+%Author: Wandell
+%Purpose:
+%   Close a window on the host.  (If the server has not been started, we do
+%   that, too).
 %
 % Example:
 %  status = mrmCloseWindow(6,'localhost')
 %  status = mrmCloseWindow(windowID,'localhost')
 %  status = mrmCloseWindow(windowID)
-%
-% BW (c) Stanford VISTASOFT Team, many years ago
 
 if ieNotDefined('host'), host = 'localhost'; end
 

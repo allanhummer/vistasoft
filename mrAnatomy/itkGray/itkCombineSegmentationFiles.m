@@ -35,7 +35,7 @@ highestlabel = 1;
 % Loop through each input segmentation file
 
 for ii = 1:nFiles
-    niIN        = niftiRead(inpaths{ii});
+    niIN        = readFileNifti(inpaths{ii});
 
     % create the output file if not yet made
     if ii == 1

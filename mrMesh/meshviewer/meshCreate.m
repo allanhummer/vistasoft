@@ -4,19 +4,11 @@ function msh = meshCreate(mshType)
 %   msh = meshCreate(mshType);
 %
 % We only create a vistaMesh type.  In the future we may design additional
-% mesh structures.  See notes below about the properties of the msh fields.
-%
-% See also:  meshSet/Get  and mrmSet/Get
-%
-% Example:
-%    msh = meshCreate;
-%    msh = meshCreate('vista mesh');
+% mesh structures
 %
 % Stanford VISTA team
 
 if ieNotDefined('mshType'), mshType = 'vistaMesh'; end
-
-mshType = mrvParamFormat(mshType);
 
 switch lower(mshType)
     case 'vistamesh'
@@ -34,52 +26,36 @@ function msh = vistaMeshCreate
 %
 %   msh = vistaMeshCreate;
 %
-%  * The triangles are triplets of vertices.
-%  * The vertices are numbered from [0,n-1], consistent with C numbering,
-%  but not Matlab numbering.  This is necessary to work with mrMeshSrv.
-%
+% Stanford VISTA Team
+
 %
 % fields = {'name', 'host', 'id', 'actor', 'mmPerVox', 'lights', 'origin', ...
 %     'initialvertices', 'vertices', 'triangles', 'colors', 'normals', 'curvature',...
 %     'ngraylayers', 'vertexGrayMap', 'fibers',...
 %     'smooth_sinc_method', 'smooth_relaxation', 'smooth_iterations', 'mod_depth'};
-%
-% (c) Stanford VISTA Team
 
 msh.name = '';
 msh.type = 'vistaMesh';
 msh.host = 'localhost';
-msh.id   = -1;    % Figure this out as soon as possible.
+msh.id   = -1;
 msh.filename = [];
 msh.path = [];
-msh.actor = 33;   % This is default.  But we should be able to change.
-msh.mmPerVox = [1 1 1];
+msh.actor = [];
+msh.mmPerVox = [];
 msh.lights   = {};
 msh.origin   = [];
-msh.initVertices = [];   % Initial vertices, without smoothing.
+msh.initVertices = [];
 msh.vertices = [];
 msh.triangles = [];
-
-% Surface shading typically for pseudo-color or for showing curvature
 msh.colors = [];
-msh.mod_depth = 0.25;
-
-msh.normals = [];   % Normals to the patches.  Can be computed using Matlab
-
-msh.curvature = []; % Not sure how we compute this.  Uh oh.
-
-% Not sure why these are here.  They relate the vertices to gray map.
-% Probably essential for VISTASOFT/mrBOLD
+msh.normals = [];
+msh.curvature = [];
 msh.grayLayers = [];
 msh.vertexGrayMap =[];
-
-% Not sure why these are here too, but probably related to mrDiffusion
 msh.fibers = [];
-
-% Mesh smoothing related
 msh.smooth_sinc_method = 0;
 msh.smooth_relaxation = 0.5;
 msh.smooth_iterations = 32;
-
+msh.mod_depth = 0.25;
 
 return;

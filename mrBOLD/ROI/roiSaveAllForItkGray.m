@@ -88,7 +88,7 @@ if ismember(ext, {'.nii', '.gz'})
     if ~exist(vANATOMYPATH, 'file')
         warning('vANATOMYPATH not found. Not using vANAT header') %#ok<WNTAG>
     else
-        ni       = niftiRead(vANATOMYPATH);
+        ni       = readFileNifti(vANATOMYPATH);
         ni.fname = fname;
         ni.data  = data;
     end

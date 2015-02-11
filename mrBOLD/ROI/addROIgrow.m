@@ -150,7 +150,7 @@ if fillholes~=0,
 end;
 
 % apply upsample factor again for each slice
-dims = viewGet(vw,'Size');
+dims = viewSize(vw);
 sliceWithData = find(squeeze(max(max(data))));
 datanew = zeros(dims);
 for slice = sliceWithData, % loops...

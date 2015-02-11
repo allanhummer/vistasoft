@@ -8,14 +8,11 @@ function vw = initHiddenGray(dataType,scan,roi);
 % ras, 09/05, ensures session is loaded, 
 % mrGlobals is run; can specify data type,
 % scan, and roi at outset.
-
-%TODO: Decide if we want to add a 'loadAnat' to the initHiddenGray
-
-if ~exist('dataType','var') || isempty(dataType)
+if ~exist('dataType','var') | isempty(dataType)
     dataType = 1;
 end
 
-if ~exist('scan','var') || isempty(scan)
+if ~exist('scan','var') | isempty(scan)
     scan = 1;
 end
 
@@ -39,7 +36,7 @@ vw.map          = [];
 vw.mapName      = '';
 vw.mapUnits     = '';
 vw.tSeriesSlice = [];
-vw.loc          = viewGet(vw,'Size') ./ 2;
+vw.loc          = viewSize(vw) ./ 2;
 
 % Initialize ROIs
 vw.ROIs         = [];

@@ -54,7 +54,7 @@ end
 
 unix([grecons ' ' tmpPfile]);
 
-rawHdr = niftiRead(dwRawFile, []);
+rawHdr = readFileNifti(dwRawFile, []);
 b0Im = zeros(rawHdr.dim(1:3));
 xform = rawHdr.qto_xyz;
 

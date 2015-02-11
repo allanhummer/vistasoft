@@ -49,7 +49,7 @@ numGrays = mode.numGrays;
 numColors = mode.numColors;
 
 if (recomputeFlag || isempty(vw.ui.image))
-    delete(findobj('Parent', vw.ui.mainAxisHandle)); %Deletes the previous graph
+    delete(findobj('Parent', vw.ui.mainAxisHandle));
     firstSlice =  viewGet(vw, 'curSlice');
     nSlices = get(vw.ui.montageSize.sliderHandle,'Value');
     slices = firstSlice:firstSlice+nSlices-1;

@@ -219,7 +219,7 @@ alignedBvalsFile = [outBaseDir '.bvals'];
 dwAlignedRawFile = [outBaseDir '.nii.gz'];
 
 disp('loading raw data...');
-dwRaw = niftiRead(dwRawFileName);
+dwRaw = readFileNifti(dwRawFileName);
 % oldPhaseDim = dwRaw.phase_dim;
 
 % Reorient the voxel order to a standard unflipped axial order:
@@ -418,7 +418,7 @@ else
 end
 
 clear dwRaw;
-dwRawAligned = niftiRead(dwAlignedRawFile);
+dwRawAligned = readFileNifti(dwAlignedRawFile);
 
 bs.n = numBootStrapSamples;
 % We'll use the non-realigned bvecs since we want to count bvecs that are
@@ -632,7 +632,7 @@ end
 % fprintf('Found %d tensor files- fixing them...\n',n);
 % for(ii=1:n)
 %     disp(['Fixing ' fn{ii} '...']);
-%     ni = niftiRead(fn{ii});
+%     ni = readFileNifti(fn{ii});
 %     % convert upper-tri, row-order convention (Dxx Dxy Dxz Dyy Dyz Dzz) to
 %     % lower-tri (Dxx Dxy Dyy Dxz Dyz Dzz).
 %     ni.data = ni.data(:,:,:,:,[1 2 4 3 5 6]);
@@ -666,7 +666,7 @@ end
 %         if(~exist(dwFn,'file'))
 %             fprintf('%s does not exist.\n',dwFn);
 %         else
-%             dwRaw = niftiRead(dwFn,[]);
+%             dwRaw = readFileNifti(dwFn,[]);
 %             fprintf('%s: dims = [%d %d %d %d];\n',dwFn,dwRaw.dim);
 %         end
 %     end

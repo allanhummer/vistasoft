@@ -33,9 +33,8 @@ ROIcoords = ROIcoords2cellArray(vw,ROIcoords);
 switch vw.viewType
     case 'Inplane',
         if removeRedundant
-            % b/c of upsampling b/w the functionals and anats, there tend
-            % to be redundant coords specifying the same functional voxel
-            % -- remove these:
+            % b/c of upsampling b/w the functionals and anats, there tend to be redundant coords
+            % specifying the same functional voxel -- remove these:
             subCoords = roiSubCoords(vw,ROIcoords{1});
         end
         ROIcoords = {subCoords};
@@ -86,13 +85,7 @@ for iSlice = 1:length(sliceInds)
     %  redundant voxels, we will not preserve the coordinates (we will get
     %  back fewer time series than coordinates), and vice versa.
     preserveCoords = ~removeRedundant;
-    [subtSeries subIndices] = getTSeriesROI(vw,ROIcoords{1}, preserveCoords);
-    
-    if removeRedundant & strcmpi(viewGet(vw, 'view type'), 'gray')
-        coords = viewGet(vw, 'coords');
-        subCoords{1} = coords(:, subIndices);
-    end
-
+    subtSeries = getTSeriesROI(vw,ROIcoords{1}, preserveCoords);
     
     if ~isempty(subtSeries) & ~getRawTseries %#ok<*AND2>
         % Norm and Detrend (faster and doesn't crash after extracting subtSeries for a small subset of the voxels)

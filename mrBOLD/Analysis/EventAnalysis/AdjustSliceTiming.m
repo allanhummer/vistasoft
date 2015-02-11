@@ -8,14 +8,10 @@ function vw = AdjustSliceTiming(vw, scans, typeName, slices)
 %           scans = 0, adjust all of the scans
 % typeName: The function creates a new dataTYPE containing the new data.  
 %           The default typeName is 'Timed'
-% slices:   Array of integers - the slices to correct. 
-%           Default is 1:viewGet('numSlices')
 %
 % Example:
 %   junk = AdjustSliceTiming(INPLANE{1}, 1, [], []);
 %
-% AS  - 04/13: Since this is purely for inplane views, change functionality
-% to new savetSeries functionality
 % MBS - 02/08: generalized to arbitrary slice ordering
 % Rory, 07/07: vw made an input parameter. Returns  vw as well.
 % Rory, 01/06: adjusted so that the input and output scan numbers don't
@@ -50,7 +46,6 @@ tsDir = viewGet(hiddenView,'tSeriesDir',1);
 deltaFrame = sessionGet(mrSESSION,'interFrameTiming',scans(1));
 refSlice   = sessionGet(mrSESSION,'refSlice',scans(1));
 sliceOrder = sessionGet(mrSESSION,'sliceOrder',scans(1));
-
 if isempty(sliceOrder)
     % GUI to  get the slice ordering from the user
     % sliceOrder = [ 2 4 6 8 1 3 5 7 9 10 11 12 14 16 18 20 13 15 17 19];
@@ -77,17 +72,14 @@ for ii = 1:length(scans)
     hiddenView = initScan(hiddenView, typeName, [], {srcDt scan});
     outScan = viewGet(hiddenView, 'numScans'); % # of scan in the new data type
     
-    % This is no longer necessary
     % Make the Scan subdirectory for the new tSeries (if it doesn't exist)
-    % scanDir = fullfile(tsDir, ['Scan',int2str(outScan)]);
-    %if ~exist(scanDir, 'dir'), mkdir(tsDir, ['Scan' int2str(outScan)]); end
+    scanDir = fullfile(tsDir, ['Scan',int2str(outScan)]);
+    if ~exist(scanDir, 'dir'), mkdir(tsDir, ['Scan' int2str(outScan)]); end
         
     % main loop: loop across slices, doing spline interpolation
     wH = waitbar(0, ['Adjusting scan ' int2str(scan)]);
     iS = 0;
-    
-    tsFull = [];
-    numDim = 0;
+
     for slice=slices
         iS = iS + 1;
         ts = loadtSeries(vw, scan, slice);
@@ -95,14 +87,9 @@ for ii = 1:length(scans)
             % frameAdjustment = deltaFrame*(refSlice - slice);
             ts = mrSliceTiming(ts,frameAdjustment(slice),'spline');           
         end
-        numDim = numel(size(ts));
-        tsFull = cat(numel(size(ts)) + 1, tsFull, ts);
+        savetSeries(ts, hiddenView, outScan, slice);
         waitbar(iS/length(slices), wH);
     end
-    if numDim == 3
-        tsFull = reshape(tsFull,[1,2,4,3]); %flip time and slices
-    end %if
-    savetSeries(tsFull, hiddenView, outScan);
     close(wH);
 end
 

@@ -103,8 +103,21 @@ for n=1:length(params.stim),
     % now scale amplitude according to the sample rate:
     params.stim(n).images = params.stim(n).images.*(params.analysis.sampleRate.^2);
     
-    % jitter images to account for eye movement if offset data exists
-    params.stim(n) = rmJitterImages(params.stim(n), params);
+    if strfind(params.analysis.session,'Classic')
+        
+        % jitter images to account for eye movement if Eyetracker data
+        % exists
+        params.stim(n) = rmJitterImages(params.stim(n), params);
+        display(['[',mfilename,'] Classic Eyetracker Correction successfully performed!'])
+        
+    elseif strfind(params.analysis.session,'NonBinary')
+        
+        % jitter images but not only during 1 TR - mean the 1000 Hz
+        % Eyetracker sample rate
+        params.stim(n) = rmNonBinaryCorrection(params.stim(n), params);
+        display(['[',mfilename,'] NonBinary Eyetracker Correction successfully performed!'])
+        
+    end
     
     % now convolve with Hrf
     params.stim(n).images = filter(params.analysis.Hrf{n}, 1, params.stim(n).images');

@@ -1,19 +1,11 @@
-function [RoiFileName, invDef, roiMask]=dtiCreateRoiFromMniNifti(dt6File, ROI_img_file, invDef, saveFlag, roiNum, showFigs)
+function [RoiFileName, invDef, roiMask]=dtiCreateRoiFromMniNifti(dt6File, ROI_img_file, invDef, saveFlag)
 %Creates an ROI file in individual space from a NIFTI file with ROI in MNI space. 
 %
-% [RoiFileName, invDef, roiMask]=dtiCreateRoiFromMniNifti(dt6File, ROI_img_file, [invDef], [saveFlag=false], [roiNum])
+% [RoiFileName, invDef, roiMask]=dtiCreateRoiFromMniNifti(dt6File, ROI_img_file, [invDef], [saveFlag=false])
 %
 % Input parameters:
-% dt6File           A path to a subject's dt6.mat file
-% ROI_img_file      Path to a nifti image ROI file with your ROI in MNI
-%                   space. You can also input the already loaded image (see
-%                   niftiRead).
-% invDef            Previously computed invDef normalization parameters. If
-%                   none is passed in they will be recomputed.
-% saveFlag          Save the ROI? True of false
-% roiNum            The number that corresponds to the desired ROI in the
-%                   image
-% showFigs          Whether to show figures displaying the normalization
+%                   ROI_img_file is an or nii.gz file 
+%                   with your ROI in MNI space, provide full path
 % Output:           The new ROI is in individual (same as dt6) space. 
 %                   The new ROI is saved in folder "ROIs" which is 
 %                   located in the same dir as input dt6.  
@@ -49,10 +41,6 @@ function [RoiFileName, invDef, roiMask]=dtiCreateRoiFromMniNifti(dt6File, ROI_im
 
 %% Check the inputs
 %
-
-if notDefined('showFigs')
-    showFigs = false;
-end
 if notDefined('dt6File')
     dt6File = mrvSelectFile('r','*.mat','Select dt6.mat file.');
 end
@@ -63,8 +51,6 @@ end
 
 if ~exist('saveFlag', 'var') || isempty(saveFlag)
     saveFlag    = false;
-    RoiFileName = [];
-elseif saveFlag == 0;
     RoiFileName = [];
 end
 
@@ -88,47 +74,23 @@ if computeNorm
     
     [sn, Vtemplate, invDef] = mrAnatComputeSpmSpatialNorm(dt.b0, dt.xformToAcpc, template);
     
-    % Check the normalization and show figures if desired
-    if showFigs == 1
-        mm        = diag(chol(Vtemplate.mat(1:3,1:3)'*Vtemplate.mat(1:3,1:3)))';
-        %bb       = mrAnatXformCoords(Vtemplate.mat,[1 1 1; Vtemplate.dim]);
-        bb        = mrAnatXformCoords(Vtemplate.mat,[1 1 1; Vtemplate.dim(1:3)]);
-        b0        = mrAnatHistogramClip(double(dt.b0),0.3,0.99);
-        b0_sn     = mrAnatResliceSpm(b0, sn, bb, mm, [1 1 1 0 0 0], 0);
-        
-        tedge     = bwperim(Vtemplate.dat>50&Vtemplate.dat<170);
-        im        = uint8(round(b0_sn*255));
-        im(tedge) = 255;
-        showMontage(im);
-    end
+    % Check the normalization
+    mm        = diag(chol(Vtemplate.mat(1:3,1:3)'*Vtemplate.mat(1:3,1:3)))';
+    %bb       = mrAnatXformCoords(Vtemplate.mat,[1 1 1; Vtemplate.dim]);
+    bb        = mrAnatXformCoords(Vtemplate.mat,[1 1 1; Vtemplate.dim(1:3)]);
+    b0        = mrAnatHistogramClip(double(dt.b0),0.3,0.99);
+    b0_sn     = mrAnatResliceSpm(b0, sn, bb, mm, [1 1 1 0 0 0], 0);
+    
+    tedge     = bwperim(Vtemplate.dat>50&Vtemplate.dat<170);
+    im        = uint8(round(b0_sn*255));
+    im(tedge) = 255;
+    showMontage(im);
 end
 
 
 %% Handle the ROI_img file: Read it, re-slice it and create the mask
-
-% If the ROI_img_file is a path to an image then load the file. Otherwise
-% assume that the image was already loaded and input into the function
-if ischar(ROI_img_file)
-    ROIimg          = niftiRead(ROI_img_file);
-    % name the roi based on the file name
-    roiname = prefix(ROI_img_file, 'short');
-else
-    % The ROIimg is the file
-    ROIimg = ROI_img_file;
-    % Later steps in this code assume that ROI_img_file is a path
-    ROI_img_file = ROIimg.fname;
-    roiname = prefix(prefix(ROIimg.fname, 'short'));
-end
-% If a specific number was given for the roi then zero all other data
-% points
-if exist('roiNum','var') && ~isempty(roiNum)
-    tmp = zeros(size(ROIimg.data));
-    for ii = 1:length(roiNum)
-        tmp(ROIimg.data==roiNum(ii)) = 1;
-    end
-    ROIimg.data = tmp;
-end
-% Get the xform from the image header
+%
+ROIimg          = readFileNifti(ROI_img_file);
 invDef.outMat   = ROIimg.qto_ijk;
 bb              = mrAnatXformCoords(dt.xformToAcpc,[1 1 1; size(dt.b0)]);
 [ROIdata,xform] = mrAnatResliceSpm(double(ROIimg.data>0), invDef, bb, [1 1 1], [1 1 1 0 0 0]);
@@ -145,7 +107,7 @@ ROIdata(isnan(ROIdata)) = 0;
 
 % Nonzero voxels
 [x1, y1, z1]   = ind2sub(size(ROIdata), find(ROIdata>.3)); %.5 was leaving too many holes
-roiMask        = dtiNewRoi(roiname);
+roiMask        = dtiNewRoi(prefix(ROI_img_file, 'short'));
 roiMask.coords = mrAnatXformCoords(xform, [x1,y1,z1]);
 clear x1 y1 z1;
 
@@ -153,13 +115,13 @@ clear x1 y1 z1;
 %% Save the ROI
 %
 % Save in the dir ROIs associated with your dt6 was
+if(strcmp(ROI_img_file((end-1):end), 'gz'))
+    ROI_img_file = prefix(ROI_img_file);
+end
 
 roiMask = dtiRoiClean(roiMask, [], [0 1 0]);
 
 if saveFlag
-    if(strcmp(ROI_img_file((end-1):end), 'gz'))
-        ROI_img_file = prefix(ROI_img_file);
-    end
     rDir = fullfile(fileparts(dt6File),'ROIs');
     if ~exist(rDir,'dir'); mkdir(rDir); end
     RoiFileName = fullfile(fileparts(dt6File), 'ROIs', [prefix(ROI_img_file, 'short') '.mat']);
