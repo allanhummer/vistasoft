@@ -41,10 +41,14 @@ if ~checkfields(stim, 'jitterFile'), return; end
 [p, n, e] = fileparts(stim.jitterFile);
 if strcmpi(n,'none'), return; end  % A filename of None returns
 
+if ~strcmp(stim.imFilter,'binary'); return; end
+
 %% Build jittered images
 
+load(stim.jitterFile)
+
 % Parse eye eyePosition data
-[x, y] = parseEyePositionData(stim);
+%[x, y] = parseEyePositionData(stim);
 
 % Get stimulus mesh grid in visual angle
 [m n step] = prfSamplingGrid(params);
@@ -57,8 +61,37 @@ nrows = size(m,1); ncols = size(m, 2);
 %   y is not negated, since a positive shift in y means an upward eye
 %   movement (and hence a downward shift in the image), and downward
 %   image shifts are represented by positive numbers.
-x = -round(x / step);
-y = round(y / step);
+
+%Mirrored
+%correct?!?!?!?
+
+%x = round(x / step);%-round(x / step);
+%y = -round(y / step);%round(y / step);
+
+%Normalize Data to grid!
+
+%Normalize to [0 1]
+rangex=1280-1;
+rangey=1024-1;
+
+x = (x-1)/rangex;
+y = (y-1)/rangey;
+
+%Normalize to [-50 50]
+
+newrangex=nrows-1;
+newrangey=ncols-1;
+
+newminx=(nrows-1)/2;
+newminy=(ncols-1)/2;
+
+x = round((x*newrangex)-newminx);
+y = round((y*newrangey)-newminy);  
+
+warning('[%s]: Attention: y will be inverted',mfilename)
+
+
+y=-y;
 
 % Initialize an image of the correct 2D dimenstions
 im = zeros(size(m));
@@ -93,7 +126,7 @@ for f = 1:stim.nFrames
 end
 
 % --------------------------------------------------------------
-%% test (un-comment to view jittered images as they are created)
+% % test (un-comment to view jittered images as they are created)
 % im = zeros(size(m));
 % range = minmax(stim.images(:));
 % for f = 1:stim.nFrames
@@ -105,30 +138,44 @@ end
 %     pause(0.05)
 % end
 %---------------------------------------------------------------
+% 
+% % --------------------------------------------------------------
+% % test (un-comment to view jittered images as they are created)
+% im = zeros(size(m));
+% range = minmax(stim.imagess(:));
+% for f = 1:stim.nFrames
+%     % reshape image from 1D to 2D
+%     im(inStimWindow) = stim.imagess(:, f);
+%     figure(100);
+%     imagesc(im, range);
+%     axis image off;
+%     pause(0.05)
+% end
+% %---------------------------------------------------------------
 
 return
 
 
-function [x, y] = parseEyePositionData(stim)
-% Read the stimulated eye positions
+% function [x, y] = parseEyePositionData(stim)
+% % Read the stimulated eye positions
+% 
+% if ischar(stim.jitterFile)
+%     tmp = load(stim.jitterFile);
+%     x = tmp.x; y = tmp.y;
+% end
+% 
+% if length(x) ~= length(y), error('x/y eye positions not matched'); end
+% 
+% nFrames = size(stim.images,2);
+% if length(x) < nFrames
+%     error('Eye movement length (%d) less than nFrames (%d)\n',length(x),nFrames);
+% elseif length(x) > nFrames
+%     fprintf('Eye movement length (%d) too long. Truncating to (%d).\n',length(x),nFrames);
+%     x = x(1:nFrames);
+%     y = y(1:nFrames);
+% end
 
-if ischar(stim.jitterFile)
-    tmp = load(stim.jitterFile);
-    x = tmp.x; y = tmp.y;
-end
-
-if length(x) ~= length(y), error('x/y eye positions not matched'); end
-
-nFrames = size(stim.images,2);
-if length(x) < nFrames
-    error('Eye movement length (%d) less than nFrames (%d)\n',length(x),nFrames);
-elseif length(x) > nFrames
-    fprintf('Eye movement length (%d) too long. Truncating to (%d).\n',length(x),nFrames);
-    x = x(1:nFrames);
-    y = y(1:nFrames);
-end
-
-return;
+%return;
 
 
 

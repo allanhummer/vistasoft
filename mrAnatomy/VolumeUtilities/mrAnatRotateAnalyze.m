@@ -46,4 +46,8 @@ end
 img = permute(img, [3 2 1]);
 img = flipdim(flipdim(img, 2), 1);
 
+%corrected for unflipped data
+
+%img = flipdim(flipdim(flipdim(img, 2), 1), 3);
+
 return
