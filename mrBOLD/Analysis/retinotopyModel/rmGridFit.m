@@ -211,13 +211,13 @@ for slice=loopSlices,
                 s{n}=rmGridFit_oneGaussianLink(s{n},prediction,data,params,t,view);
             
             case {'addgaussian','add one gaussian'}
-                [residuals s{n}] = rmComputeResiduals(view,params,s{n},slice,[true params.analysis.coarseDecimate>1]);
+                [residuals, s{n}] = rmComputeResiduals(view,params,s{n},slice,[true params.analysis.coarseDecimate>1]);
                 t.dcid = t.dcid + 1;
                 s{n}=rmGridFit_oneGaussian(s{n},prediction,residuals,params,t);
                 trendBetas = zeros(size(trendBetas));
                 
             case {'addgaussianlinked','add one gaussian linked to neighbors'}
-                [residuals s{n}] = rmComputeResiduals(view,params,s{n},slice,...
+                [residuals, s{n}] = rmComputeResiduals(view,params,s{n},slice,...
                     [params.analysis.coarseToFine params.analysis.coarseDecimate>1]);
                 t.dcid = t.dcid + 1;
                 s{n}=rmGridFit_oneGaussianLink(s{n},prediction,residuals,params,t,view);

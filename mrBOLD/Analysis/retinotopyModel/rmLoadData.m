@@ -159,7 +159,7 @@ if coarse,
 	tSeries  = rmAverageTime(tSeries, params.stim(ds).nUniqueRep);
 	blurParams = params.analysis.coarseBlurParams(1,:);
 	grayConMat = [];
-	[tSeries grayConMat] = dhkGraySmooth(vw, tSeries, blurParams, grayConMat);
+	[tSeries, grayConMat] = dhkGraySmooth(vw, tSeries, blurParams, grayConMat);
 	coarseIndex = rmCoarseSamples(rmGet(params,'roicoords'),params.analysis.coarseSample);
 
 	% limit to roi

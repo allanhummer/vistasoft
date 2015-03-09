@@ -18,7 +18,7 @@ if ~exist('r','var') || isempty(r) || r<2,
 end
 
 % get size of x
-[s1 s2] = size(x);
+[s1, s2] = size(x);
 
 % sometimes we input single precision
 convert_back_to_single = false;

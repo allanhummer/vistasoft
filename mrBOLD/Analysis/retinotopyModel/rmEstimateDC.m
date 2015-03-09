@@ -1,4 +1,4 @@
-function [data trendBetas]=rmEstimateDC(data,trendBetas,params,trends,dcid)
+function [data, trendBetas]=rmEstimateDC(data,trendBetas,params,trends,dcid)
 % rmEstimateDC - estimate DC component for each scan from a selected period
 % of data
 %

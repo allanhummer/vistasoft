@@ -1,4 +1,4 @@
-function [t nt dcid] = rmMakeTrends(params,verbose)
+function [t, nt, dcid] = rmMakeTrends(params,verbose)
 % rmMakeTrends - make trends to add to GLM fit
 %
 % [t nt dcid] = rmMakeTrends(params, [verbose]);

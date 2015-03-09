@@ -536,6 +536,9 @@ end
 % optimization parameters
 params.analysis.fmins.options = optimset('fmincon');
 
+% Change Algorithm - (Allan Hummer)
+%params.analysis.fmins.options = optimset(params.analysis.fmins.options,'Algorithm','interior-point');
+
 % Display iterations?
 params.analysis.fmins.options = optimset(params.analysis.fmins.options,'Display','none'); %'none','iter','final'
 
