@@ -47,10 +47,10 @@ if isempty(e), n = sprintf('%s.nii',n);end
 save_nii(ni,fullfile(p,n));
 
 %% Zip the file
-gzip(fullfile(p,n));
+%gzip(fullfile(p,n));
 
 %% Delete the unzipped file created by save_nii.m:
-delete(fullfile(p,n));
+%delete(fullfile(p,n));
 
 
 end
