@@ -1,5 +1,5 @@
-function installSegmentation(SessionwithPath,query, keepAllNodes, filePaths,numGrayLayers)
-%%function installSegmentation(query, keepAllNodes, filePaths,numGrayLayers)
+function installSegmentation(query, keepAllNodes, filePaths, numGrayLayers)
+%
 % function installSegmentation(query, keepAllNodes, filePaths, numGrayLayers)
 %
 % Rebuild coords after a new segmentation.
@@ -15,20 +15,18 @@ function installSegmentation(SessionwithPath,query, keepAllNodes, filePaths,numG
 % ras 06/09: eliminated a redundant set of file requests. Streamlined the
 % logic, so it doesn't call a large series of nested files. Condensed file
 % selection to a single dialog, which guesses reasonable defaults.
-% if ~exist('query','var')
-% 	% query only if Gray, Volume, or Flat files are found
-% 	global HOMEDIR %#ok<TLEV>
-% 	w1 = dir( fullfile(HOMEDIR, 'Volume*') );
-% 	w2 = dir( fullfile(HOMEDIR, 'Gray*') );
-% 	w3 = dir( fullfile(HOMEDIR, 'Flat*') );
-% 	if (~isempty(w1) || ~isempty(w2) || ~isempty(w3))
-% 		query = 1;
-% 	else
-% 		query = 0;
-% 	end
-% end
-
-query = 0;
+if ~exist('query','var')
+	% query only if Gray, Volume, or Flat files are found
+	global HOMEDIR %#ok<TLEV>
+	w1 = dir( fullfile(HOMEDIR, 'Volume*') );
+	w2 = dir( fullfile(HOMEDIR, 'Gray*') );
+	w3 = dir( fullfile(HOMEDIR, 'Flat*') );
+	if (~isempty(w1) || ~isempty(w2) || ~isempty(w3))
+		query = 1;
+	else
+		query = 0;
+	end
+end
 
 % if keepAllNodes is true, we store coordinates for all gray voxels. If it
 % is false, then we only store gray voxels within the functional field of
@@ -39,28 +37,20 @@ if ~exist('keepAllNodes','var'), keepAllNodes=0; end
 
 if notDefined('filePaths')
 	% get a set of file paths in a dialog
-	%filePaths = segmentationFilesDialog;
-    %filePaths={'/sacher/melange1/fmri/projects/ret14/subjects/ret14-opt05/trio/segmentation/ITKGray/WM.nii' '' '' ''}
-    filePaths={[SessionwithPath,'segmentation/ITKGray/WM.nii'] '' '' ''};
-    
+	filePaths = segmentationFilesDialog;
     if isempty(filePaths), return; end
 end
 
-%if ~exist('numGrayLayers', 'var')
-%    resp = inputdlg('number of gray layers?', 'enter a number', 1, {'3'});
-%    numGrayLayers = str2double(resp);
-%end
-
-numGrayLayers=3;
-%numGrayLayers=6;
+if ~exist('numGrayLayers', 'var')
+    resp = inputdlg('number of gray layers?', 'enter a number', 1, {'3'});
+    numGrayLayers = str2double(resp);
+end
     
-% if query
-%     resp = questdlg('Delete Gray and all Flat data files and close all Gray and Flat windows?');
-% else
-%     resp = 'Yes';
-% end
-
-resp = 'Yes';
+if query
+    resp = questdlg('Delete Gray and all Flat data files and close all Gray and Flat windows?');
+else
+    resp = 'Yes';
+end
 
 % delete coords and rebuild
 if ~strcmp(resp,'Yes')
