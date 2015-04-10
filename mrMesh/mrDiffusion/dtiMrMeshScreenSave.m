@@ -7,7 +7,7 @@ function dtiMrMeshScreenSave(handles,fname)
 %   Save whatever is in the dti mrMesh window to a file
 %
 
-rgb = mrmGet(handles.mrMesh,'screenshot')/255;
+rgb = mrmGet(handles,'screenshot')/255;
 imwrite(rgb, fname);
 disp(['Screenshot saved to ' fname '.']);
 

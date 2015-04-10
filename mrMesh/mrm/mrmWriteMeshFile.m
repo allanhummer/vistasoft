@@ -24,7 +24,9 @@ if notDefined('verbose'), verbose = 1; end
 if notDefined('filename')
     % No name sent in.  So we get one.
     try, startDir = getAnatomyPath; catch, startDir = pwd; end
-    filename = mrvSelectFile('w','mat','Save Mesh',startDir);
+    %AVOID SAVE PROMPT
+    %filename = mrvSelectFile('w','mat','Save Mesh',startDir);
+    filename=[];
     if  isempty(filename), disp('User canceled'); return; end
     p = fileparts(filename);
 elseif exist(filename,'file') == 7

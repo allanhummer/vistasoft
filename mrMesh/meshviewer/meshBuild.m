@@ -93,6 +93,7 @@ newMesh = meshSet(newMesh,'nGrayLayers',numGrayLayers);
 
 waitbar(0.9,wbar,sprintf('meshBuild: Saving mesh file %s',meshGet(newMesh,'name')));
 
+%AVOID SAVE PROMPT
 % Save mesh file
 [newMesh newMesh.path] = mrmWriteMeshFile(newMesh);
 
@@ -161,38 +162,39 @@ alpha = 200;
 restrictVOI = 1;
 relaxIterations = 0.2;
 
-prompt = {'Mesh Name:',...
-        'Number of Gray Layers (0-4):',...
-        'Hemisphere (0=both, 1=left, 2=right):',...
-        % 'Default alpha (0-255):',...
-        % 'Inflation (0=none, 1=lots):',...
-        % 'Restrict to class VOI (0|1):'};
-        };
-defAns = {meshName,...
-        num2str(numGrayLayers),...
-        num2str(hemiNum),...
-        % num2str(alpha),...
-        % num2str(relaxIterations),...
-        % num2str(restrictVOI)};
-        };
-
-resp = inputdlg(prompt, 'meshBuild Parameters', 1, defAns);
-
-if(~isempty(resp))
-    meshName = resp{1};
-    numGrayLayers = str2num(resp{2});
-    hemiNum = str2num(resp{3});
-    % alpha = str2num(resp{4});
-    % relaxIterations = round(str2num(resp{5})*160);  % Arbitrary choice, scales iters [0,160]
-    % restrictVOI = str2num(resp{6});
-else
-    meshName = [];
-    numGrayLayers = [];
-    hemiNum = [];
-    % alpha = [];
-    % relaxIterations = [];  % Arbitrary choice, scales iters [0,160]
-    % restrictVOI = [];
-end
+% PROMPT FOR HEMISPHERE SELECTION
+% prompt = {'Mesh Name:',...
+%         'Number of Gray Layers (0-4):',...
+%         'Hemisphere (0=both, 1=left, 2=right):',...
+%         % 'Default alpha (0-255):',...
+%         % 'Inflation (0=none, 1=lots):',...
+%         % 'Restrict to class VOI (0|1):'};
+%         };
+% defAns = {meshName,...
+%         num2str(numGrayLayers),...
+%         num2str(hemiNum),...
+%         % num2str(alpha),...
+%         % num2str(relaxIterations),...
+%         % num2str(restrictVOI)};
+%         };
+%     
+% resp = inputdlg(prompt, 'meshBuild Parameters', 1, defAns);
+% 
+% if(~isempty(resp))
+%     meshName = resp{1};
+%     numGrayLayers = str2num(resp{2});
+%     hemiNum = str2num(resp{3});
+%     % alpha = str2num(resp{4});
+%     % relaxIterations = round(str2num(resp{5})*160);  % Arbitrary choice, scales iters [0,160]
+%     % restrictVOI = str2num(resp{6});
+% else
+%     meshName = [];
+%     numGrayLayers = [];
+%     hemiNum = [];
+%     % alpha = [];
+%     % relaxIterations = [];  % Arbitrary choice, scales iters [0,160]
+%     % restrictVOI = [];
+% end
 
 return;
 
@@ -207,13 +209,18 @@ if ieNotDefined('view'), error('You must send in a volume view'); end
 if ieNotDefined('hemiName'), error('You must define right,left or both'); end
 if ieNotDefined('numGrayLayers'), numGrayLayers = 0; end
 
-classFile = verifyClassFile(view,hemiName);
+% AVOID CONFORMATION PROMPT
+%classFile = verifyClassFile(view,hemiName);
+classFile =  viewGet(view,'classFileName',hemiName);
+
 if isempty(classFile),
     close(wbar); newMeshNum = -1;
     voxels = [];
     return;
 end
+
 classFileParam = [hemiName,'ClassFile'];
+
 view       = viewSet(view,classFileParam,classFile);
 
 classData = viewGet(view,'classdata',hemiName);
