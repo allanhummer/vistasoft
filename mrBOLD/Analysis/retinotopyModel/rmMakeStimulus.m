@@ -101,7 +101,20 @@ for n=1:length(params.stim),
     params.stim(n).images = params.stim(n).images.*(params.analysis.sampleRate.^2);
     
     % jitter images to account for eye movement if offset data exists
-    params.stim(n) = rmJitterImages(params.stim(n), params);
+
+    if strfind(params.analysis.session,'Classic')
+        
+        % jitter images - take mean gaze value / TR
+        params.stim(n) = rmJitterImages(params.stim(n), params);
+        display(['[',mfilename,'] Classic Eyetracker Correction successfully performed!'])
+        
+    elseif strfind(params.analysis.session,'NonBinary')
+        
+        % jitter images - use 1000Hz sample rate of Eyetracker and build "gaze density map"
+        params.stim(n) = rmNonBinaryCorrection(params.stim(n), params);
+        display(['[',mfilename,'] NonBinary Eyetracker Correction successfully performed!'])
+        
+    end
     
     % now convolve with HRF
     params.stim(n).images = filter(params.analysis.Hrf{n}, 1, params.stim(n).images'); % images: pixels by time (so images': time x pixels)
