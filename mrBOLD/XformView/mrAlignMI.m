@@ -107,6 +107,7 @@ if notDefined('initXFM'),
         %    'starting estimate','Yes','No','No');
         %if strmatch(bn,'Yes'),
             useStartingEstimate = 1;
+            %useStartingEstimate = 0;
         %end;
     end;
 end;
@@ -190,6 +191,7 @@ if useStartingEstimate,
     disp('flags.params :');disp(flags.params);
     flags.sep    = [8 4 2 1];
     rotTrans     = spm_coreg(VG,VF,flags);
+    %rotTrans     = spm_coreg(VG,VG);
     oldAlignment = mrSESSION.alignment;
     disp('Old alignment :');disp(oldAlignment);
 else

@@ -18,6 +18,7 @@ function [params, M] = rmStimulusMatrix(params, xRange, yRange, playMovie, useFi
 % If useFinalImages is true, displays the processed images, not the original.  
 % This includes eye-movement jitter and HRF. If false, displays the
 % original (unprocessed) images.
+% If Eyetracker - displays images only modified by Eyetracker jitter
 %
 % If params are omitted, gets from current view. Returns a modified set of
 % parameters, in which the params.stim(s).images3D field for each entry s in
@@ -67,6 +68,11 @@ for ii = 1:length(scans)
         % recording range and averaged so we'll do that first.
         rng = params.stim(s).prescanDuration+1:size(params.stim(s).images_org,2);
         presentedImages  = params.stim(s).images_org(:,rng);
+    elseif strcmp(useFinalImages,'Eyetracker')
+        % We show the Eyetracker jittered images, not the original
+        presentedImages  = params.stim(s).images_EyetrackerCorrected;
+        presentedImages = repmat(presentedImages,1, params.stim(s).nUniqueRep);
+        
     else
         % We show the filtered (processed) images, not the original
         % Good for viewing jittered or effects of HRF.

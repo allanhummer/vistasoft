@@ -84,9 +84,9 @@ RandStream.setGlobalStream(s);
 ts = single(smooth(randn(300,1), 5));
 
 % detrend three ways
-[~, fit1] = detrendTSeries(ts,-1); % linear
-[~, fit2] = detrendTSeries(ts, 2); % quadratic
-[~, fit3] = detrendTSeries(ts, 1, 20); % high pass
+[foo1, fit1] = detrendTSeries(ts,-1); % linear
+[foo2, fit2] = detrendTSeries(ts, 2); % quadratic
+[foo3, fit3] = detrendTSeries(ts, 1, 20); % high pass
 
 % plot
 figure(101)

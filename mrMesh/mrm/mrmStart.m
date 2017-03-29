@@ -39,8 +39,13 @@ switch computer
             elseif ~isempty(strfind(v,'centos'))
                 srvPath = which('mrMeshSrv_Centos.glxa64');
             elseif ~isempty(strfind(y,'Ubuntu'))
-                disp('Ubuntu system detected: Loading mrMeshSrv for Ubuntu 12.04')
-                srvPath = which('mrMeshSrv_Ubuntu1204.glxa64');
+                if ~isempty(strfind(y,'16.04'))
+                    disp('Ubuntu system detected: Loading mrMeshSrv for Ubuntu 16.04')
+                    srvPath = which('mrMeshSrv_Ubuntu1604.glxa64');
+                else
+                    disp('Ubuntu system detected: Loading mrMeshSrv for Ubuntu 12.04')
+                    srvPath = which('mrMeshSrv_Ubuntu1204.glxa64');
+                end
             else
                 srvPath = which('mrMeshSrv.glxa64');
             end

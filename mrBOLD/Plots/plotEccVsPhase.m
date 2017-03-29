@@ -1,4 +1,4 @@
-function [vw figHandle] = plotEccVsPhase(vw, newfig, colored, drawROI, varargin)
+function [vw figHandle subX subY] = plotEccVsPhase(vw, newfig, colored, drawROI, varargin)
 %
 % [vw figHandle] = plotEccVsPhase(vw, newfig, co)
 %

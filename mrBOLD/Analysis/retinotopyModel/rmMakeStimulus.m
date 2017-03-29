@@ -108,6 +108,7 @@ for n=1:length(params.stim),
         % jitter images to account for eye movement if Eyetracker data
         % exists
         params.stim(n) = rmJitterImages(params.stim(n), params);
+        params.stim(n).images_EyetrackerCorrected = params.stim(n).images;
         display(['[',mfilename,'] Classic Eyetracker Correction successfully performed!'])
         
     elseif strfind(params.analysis.session,'NonBinary')
@@ -115,6 +116,7 @@ for n=1:length(params.stim),
         % jitter images but not only during 1 TR - mean the 1000 Hz
         % Eyetracker sample rate
         params.stim(n) = rmNonBinaryCorrection(params.stim(n), params);
+        params.stim(n).images_EyetrackerCorrected = params.stim(n).images;
         display(['[',mfilename,'] NonBinary Eyetracker Correction successfully performed!'])
         
     end

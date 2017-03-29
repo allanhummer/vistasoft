@@ -467,7 +467,8 @@ else
 			
 			% I guess this upsample factor assumes your functional data are
 			% 2.5 x 2.5 x 3 mm?
-            upsamplefactor = 2.5*2.5*3; % sigh.....
+            upsamplefactor = 1*1*1
+            %upsamplefactor = 2.5*2.5*3; % sigh.....
             for ii = 1:size(all_models,1)
                 s = wstat(all_models(ii,:),weight,upsamplefactor);
                 if isfinite(s.tval)

@@ -155,6 +155,7 @@ mapVol = NaN*ones(dataSize(vw, scan));
 if verbose, hwait = waitbar(0,'Computing Contrast Map'); end
 
 nSlices = viewGet(vw, 'numSlices');
+
 for slice = 1:nSlices
 	model  = loadGlmSlice(vw, slice, scan);		
 

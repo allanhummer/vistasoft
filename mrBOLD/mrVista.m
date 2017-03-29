@@ -54,7 +54,7 @@ evalin('base','mrGlobals');
 % Check Matlab version number
 % Change list after testing Matlab upgrades
 expectedMatlabVersion = {'6' '6.1' '6.5' '6.5.1' '6.5.2' '7.0' ...
-                         '7.0.1' '7.0.4' '7.1' '7.2', '7.3', '7.4', '7.5', '7.6','7.7', '7.8', '7.9', '7.11', '7.13'};  
+                         '7.0.1' '7.0.4' '7.1' '7.2', '7.3', '7.4', '7.5', '7.6','7.7', '7.8', '7.9', '7.11', '7.13','9.0'};  
 version = ver('Matlab');
 matlabVersion = version.Version;        
 if ~ismember(matlabVersion, expectedMatlabVersion);    % (matlabVersion ~= expectedMatlabVersion)
@@ -68,7 +68,7 @@ end
 %% set global variables/properties
 % check if this matlab version has a JAVA bug, and if so, disable java
 % figures:
-javaFigs = mrvJavaFeature;  
+%javaFigs = mrvJavaFeature;  
 
 % Set HOMEDIR 
 HOMEDIR = pwd; %#ok<NASGU>
@@ -115,6 +115,6 @@ end
 clear expectedMatlabVersion version matlabVersion
 
 % reset Java to the previous state
-mrvJavaFeature(javaFigs);
+%mrvJavaFeature(javaFigs);
 
 return;

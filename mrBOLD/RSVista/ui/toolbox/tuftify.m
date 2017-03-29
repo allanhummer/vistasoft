@@ -17,7 +17,11 @@ color = get(gcf, 'Color');
 
 set(obj, 'TickDir', 'out', 'Box', 'off');
 
-h(1) = line([AX(1) xtick(2)], [AX(3) AX(3)], 'Color', color, 'LineWidth', 2);
+if length(xtick)==1
+    h(1) = line([AX(1) xtick(end)], [AX(3) AX(3)], 'Color', color, 'LineWidth', 2);
+else
+    h(1) = line([AX(1) xtick(2)], [AX(3) AX(3)], 'Color', color, 'LineWidth', 2);
+end
 h(2) = line([xtick(end) AX(2)], [AX(3) AX(3)], 'Color', color, 'LineWidth', 2);
 h(3) = line([AX(1) AX(1)], [AX(3) ytick(1)], 'Color', color, 'LineWidth', 2);
 h(4) = line([AX(1) AX(1)], [ytick(end) AX(4)], 'Color', color, 'LineWidth', 2);

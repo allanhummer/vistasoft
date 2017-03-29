@@ -1,4 +1,4 @@
-function installSegmentation(SessionwithPath,query, keepAllNodes, filePaths,numGrayLayers)
+function installSegmentation(WMPath,numGrayLayers)
 %%function installSegmentation(query, keepAllNodes, filePaths,numGrayLayers)
 % function installSegmentation(query, keepAllNodes, filePaths, numGrayLayers)
 %
@@ -28,7 +28,7 @@ function installSegmentation(SessionwithPath,query, keepAllNodes, filePaths,numG
 % 	end
 % end
 
-query = 0;
+%query = 0;
 
 % if keepAllNodes is true, we store coordinates for all gray voxels. If it
 % is false, then we only store gray voxels within the functional field of
@@ -37,23 +37,39 @@ query = 0;
 % the field of view from a particular session.
 if ~exist('keepAllNodes','var'), keepAllNodes=0; end
 
-if notDefined('filePaths')
-	% get a set of file paths in a dialog
-	%filePaths = segmentationFilesDialog;
-    %filePaths={'/sacher/melange1/fmri/projects/ret14/subjects/ret14-opt05/trio/segmentation/ITKGray/WM.nii' '' '' ''}
-    filePaths={[SessionwithPath,'segmentation/ITKGray/WM.nii'] '' '' ''};
-    
-    if isempty(filePaths), return; end
-end
+filePaths={WMPath '' '' ''};
+
+% if notDefined('filePaths')
+%     % get a set of file paths in a dialog
+%     %filePaths = segmentationFilesDialog;
+%     %filePaths={'/sacher/melange1/fmri/projects/ret14/subjects/ret14-opt05/trio/segmentation/ITKGray/WM.nii' '' '' ''}
+%     
+%     filePaths={[SessionwithPath,'segmentation/ITKGray/WM.nii'] '' '' ''};
+%     
+%     if ~exist(filePaths{1},'file')
+%         
+%         filePaths={[SessionwithPath,'segmentation/itkgray/WM.nii'] '' '' ''};
+%         
+%     end
+%     
+%     
+%     
+%     if isempty(filePaths), return; end
+% end
 
 %if ~exist('numGrayLayers', 'var')
 %    resp = inputdlg('number of gray layers?', 'enter a number', 1, {'3'});
 %    numGrayLayers = str2double(resp);
 %end
 
-numGrayLayers=3;
+if ~exist('numGrayLayers', 'var')
+    numGrayLayers=3;
+end
+%numGrayLayers=3;
 %numGrayLayers=6;
-    
+
+display(['[',mfilename,'] Number of Gray layers set to ',num2str(numGrayLayers),'.'])
+
 % if query
 %     resp = questdlg('Delete Gray and all Flat data files and close all Gray and Flat windows?');
 % else
@@ -64,7 +80,7 @@ resp = 'Yes';
 
 % delete coords and rebuild
 if ~strcmp(resp,'Yes')
-	disp('Coords, corAnal, and parameter map files not deleted.');
+    disp('Coords, corAnal, and parameter map files not deleted.');
     return;
 end
 closeAllGrayWindows;
@@ -84,20 +100,20 @@ cleanAllFlats;
 
 % build the gray coordinates fields (this saves the coords.mat file)
 if keepAllNodes==1
-	% the gray nodes/edges are either loaded or built in the call to
-	% initHiddenGray above. It is awkward to pass a flag to this
-	% function to load all nodes, so we recompute the nodes/edges here.
-	if prefsVerboseCheck >= 1
-		fprintf('[%s]: Rebuilding Gray coordinates with ALL nodes. \n', ...
-				mfilename);
-	end
-	buildGrayCoords([], [], 1, filePaths, numGrayLayers);
+    % the gray nodes/edges are either loaded or built in the call to
+    % initHiddenGray above. It is awkward to pass a flag to this
+    % function to load all nodes, so we recompute the nodes/edges here.
+    if prefsVerboseCheck >= 1
+        fprintf('[%s]: Rebuilding Gray coordinates with ALL nodes. \n', ...
+            mfilename);
+    end
+    buildGrayCoords([], [], 1, filePaths, numGrayLayers);
 else
-	if prefsVerboseCheck >= 1
-		fprintf(['[%s]: Rebuilding Gray coordinates with nodes only ' ...
-				 'where the inplanes have data. \n'], mfilename);
-	end
-	buildGrayCoords([], [], 0, filePaths, numGrayLayers);
+    if prefsVerboseCheck >= 1
+        fprintf(['[%s]: Rebuilding Gray coordinates with nodes only ' ...
+            'where the inplanes have data. \n'], mfilename);
+    end
+    buildGrayCoords([], [], 0, filePaths, numGrayLayers);
 end
 
 disp('Rebuilt Gray coords. Deleted old corAnal and parameter map files.');
@@ -119,62 +135,62 @@ defaultLeftGray = '';
 defaultRightGray = '';
 
 try
-	% this depends on whether we generally save things in NIFTI format, or
-	% default (mrGray) format
-	format = prefsFormatCheck;
-
+    % this depends on whether we generally save things in NIFTI format, or
+    % default (mrGray) format
+    format = prefsFormatCheck;
+    
     % This line seems to be unused so let's get rid of it...
     % 	% also want the anat path
     % 	anatPath = getAnatomyPath;
-
-	% left class file
-	if isequal( lower(format), 'nifti' )
-		pattern = fullfile(pwd, '3DAnatomy', 'Left', '*.nii.gz');		
-	else
-		pattern = fullfile(pwd, '3DAnatomy', 'Left', '*.?lass');
-	end
-	w = dir(pattern);
-	if ~isempty(w),  
-		defaultLeftClass = fullfile(pwd, '3DAnatomy', 'Left', w(1).name);
-	end
-	
-	% right class file
-	if isequal( lower(format), 'nifti' )
-		pattern = fullfile(pwd, '3DAnatomy', 'Right', '*.nii.gz');		
-	else
-		pattern = fullfile(pwd, '3DAnatomy', 'Right', '*.?lass');
-	end
-	w = dir(pattern);
-	if ~isempty(w),  
-		defaultRightClass = fullfile(pwd, '3DAnatomy', 'Right', w(1).name);
-	end
-	
-	% left gray file
-	if isequal( lower(format), 'nifti' )
-		% we don't need to assign a value here
-	else
-		pattern = fullfile(pwd, '3DAnatomy', 'Left', '*.?ray');
-		w = dir(pattern);
-		if ~isempty(w),
-			defaultLeftGray = fullfile(pwd, '3DAnatomy', 'Left', w(1).name);
-		end
-	end
-	
-	% right gray file
-	if isequal( lower(format), 'nifti' )
-		% we don't need to assign a value here
-	else
-		pattern = fullfile(pwd, '3DAnatomy', 'Right', '*.?ray');
-		w = dir(pattern);
-		if ~isempty(w),
-			defaultRightGray = fullfile(pwd, '3DAnatomy', 'Right', w(1).name);
-		end
-	end
-	
+    
+    % left class file
+    if isequal( lower(format), 'nifti' )
+        pattern = fullfile(pwd, '3DAnatomy', 'Left', '*.nii.gz');
+    else
+        pattern = fullfile(pwd, '3DAnatomy', 'Left', '*.?lass');
+    end
+    w = dir(pattern);
+    if ~isempty(w),
+        defaultLeftClass = fullfile(pwd, '3DAnatomy', 'Left', w(1).name);
+    end
+    
+    % right class file
+    if isequal( lower(format), 'nifti' )
+        pattern = fullfile(pwd, '3DAnatomy', 'Right', '*.nii.gz');
+    else
+        pattern = fullfile(pwd, '3DAnatomy', 'Right', '*.?lass');
+    end
+    w = dir(pattern);
+    if ~isempty(w),
+        defaultRightClass = fullfile(pwd, '3DAnatomy', 'Right', w(1).name);
+    end
+    
+    % left gray file
+    if isequal( lower(format), 'nifti' )
+        % we don't need to assign a value here
+    else
+        pattern = fullfile(pwd, '3DAnatomy', 'Left', '*.?ray');
+        w = dir(pattern);
+        if ~isempty(w),
+            defaultLeftGray = fullfile(pwd, '3DAnatomy', 'Left', w(1).name);
+        end
+    end
+    
+    % right gray file
+    if isequal( lower(format), 'nifti' )
+        % we don't need to assign a value here
+    else
+        pattern = fullfile(pwd, '3DAnatomy', 'Right', '*.?ray');
+        w = dir(pattern);
+        if ~isempty(w),
+            defaultRightGray = fullfile(pwd, '3DAnatomy', 'Right', w(1).name);
+        end
+    end
+    
 catch ME
     warning(ME.identifier, ME.mesage);
-	% can't get it? don't worry...
-	
+    % can't get it? don't worry...
+    
 end
 
 %% now build the dialog structure
@@ -203,13 +219,13 @@ dlg(end).value		= defaultRightGray;
 %% put the dialog to the user
 [resp ok] = generalDialog(dlg, 'Install Gray Segmentation');
 if ~ok
-	filePaths = [];
-    fprintf('User aborted.\n'); 
-    return; 
+    filePaths = [];
+    fprintf('User aborted.\n');
+    return;
 end
 
 %% parse the response
 filePaths = {resp.leftClassFile resp.rightClassFile ...
-			 resp.leftPath resp.rightPath};
+    resp.leftPath resp.rightPath};
 
 return

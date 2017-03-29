@@ -49,6 +49,7 @@ stim.TR = TR;
 
 for s = 1:length(scans)
     parList{s} = dataTYPES(dt).scanParams(scans(s)).parfile;
+    %parList{s} = '/sacher/melange/fmri/users/ahummer/RETPipeline/GLMParFiles/FullField.par';
     if ~exist(parList{s}, 'file')
         % try appending .par
         [p f ext] = fileparts(parList{s});

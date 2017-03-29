@@ -64,24 +64,62 @@ volXyz = [0,0,0; 1,0,0; 0,1,0; 1,1,0; 0,0,1; 1,0,1; 0,1,1; 1,1,1];
 % (-1000,1000,1000). Then, we find which of the 8 corners is closest to
 % that point. 
 d = sqrt((-1000-volRas(:,1)).^2 + (1000-volRas(:,2)).^2 + (1000-volRas(:,3)).^2);
-las = find(min(d)==d); las = las(1) %las=2
+las = find(min(d)==d); las = las(1); %las=2
 d = sqrt((1000-volRas(:,1)).^2 + (1000-volRas(:,2)).^2 + (1000-volRas(:,3)).^2);
-ras = find(min(d)==d); ras = ras(1) %ras=1
+ras = find(min(d)==d); ras = ras(1); %ras=1
 d = sqrt((-1000-volRas(:,1)).^2 + (-1000-volRas(:,2)).^2 + (1000-volRas(:,3)).^2);
-lps = find(min(d)==d); lps = lps(1) 
+lps = find(min(d)==d); lps = lps(1); %lps=6
 d = sqrt((-1000-volRas(:,1)).^2 + (1000-volRas(:,2)).^2 + (-1000-volRas(:,3)).^2);
-lai = find(min(d)==d); lai = lai(1) %lai=4
+lai = find(min(d)==d); lai = lai(1); %lai=4
 
 if  lps==las
-    lps=6
+    display(['[',mfilename,'] Orientation problem: LPS = LAS. Trying to fix...'])
+    
+    display(['[',mfilename,'] Old Values: LAS = ',num2str(las),' , RAS = ',num2str(ras),' , LPS = ',num2str(lps),' , LAI = ',num2str(lai)])
+    
+    lps=6;
+    
+    display(['[',mfilename,'] New Values: LAS = ',num2str(las),' , RAS = ',num2str(ras),' , LPS = ',num2str(lps),' , LAI = ',num2str(lai)])
+    
 end
 
 if  las==lai
-    las=2
-    ras=1
-    lps=6
-    lai=4
+    
+    display(['[',mfilename,'] Orientation problem: LAS = LAI. Trying to fix...'])
+    
+    EPISegmentation=1;
+    
+    display(['[',mfilename,'] Old Values: LAS = ',num2str(las),' , RAS = ',num2str(ras),' , LPS = ',num2str(lps),' , LAI = ',num2str(lai)])
+    
+    if EPISegmentation==1
+        
+        display(['[',mfilename,'] ------------------------------------------------------------------'])
+        display(['[',mfilename,'] WE USE VALUES FOR EPI SEGMENTATION - TRY TO CHANGE IF ERROR OCCURS'])
+        display(['[',mfilename,'] ------------------------------------------------------------------'])
+        
+        las=7;
+        ras=8;
+        lps=5;
+        lai=3;
+        
+    else
+        
+        display(['[',mfilename,'] ------------------------------------------------------------------'])
+        display(['[',mfilename,'] WE USE VALUES FOR T1 SEGMENTATION - TRY TO CHANGE IF ERROR OCCURS'])
+        display(['[',mfilename,'] ------------------------------------------------------------------'])
+        
+        las=2;
+        ras=1;
+        lps=6;
+        lai=4;
+        
+    end
+    
+    display(['[',mfilename,'] New Values: LAS = ',num2str(las),' , RAS = ',num2str(ras),' , LPS = ',num2str(lps),' , LAI = ',num2str(lai)])
+    
 end
+
+%display(['[',mfilename,'] Values unchanged: LAS = ',num2str(las),' , RAS = ',num2str(ras),' , LPS = ',num2str(lps),' , LAI = ',num2str(lai)])
 
 % Now we have the indices into volRas/volXyz of the 4 anatomical 
 % reference points- las, ras, lps and lai. Put them into a 4x4 matrix 

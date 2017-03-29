@@ -37,7 +37,7 @@ function [ni,canXform] = niftiApplyCannonicalXform(ni, canXform, phaseDir)
 % 2008.08.15 RFD: fixed dim order bug.
 %
 % (c) Stanford VISTALAB
-
+ 
 if(nargin<1), help(mfile); end
 
 % Do a sanity-check on the nifti transform

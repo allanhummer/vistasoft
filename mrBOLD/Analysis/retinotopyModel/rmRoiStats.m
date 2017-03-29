@@ -39,6 +39,7 @@ switch lower(view.viewType),
 end;
 
 % stats we like to get
+%stats = {'ecc'};
 stats = {'varexp','x','y','ecc','sigma','x2','y2','ecc2','sigma2','sigmaratio'};
 
 % output

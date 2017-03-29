@@ -160,8 +160,8 @@ for FrameNum=1:stim.nFrames
     xEyePosNeg=xEyePos-51;
     
     for f = 1:length(xEyePosNeg)
-        for g = 1:length(yEyePosNeg)
-            
+        %for g = 1:length(yEyePosNeg)
+        g=f;    
             
             % Jitter in opp direction to eye movement
             
@@ -187,7 +187,7 @@ for FrameNum=1:stim.nFrames
             
             clear imShifted xShifted yShifted xUnshifted yUnshifted
             
-        end
+        %end
         
     end
     
@@ -197,15 +197,16 @@ for FrameNum=1:stim.nFrames
     realstimimage=zeros(size(m));
     
     for p = 1:length(xEyePos)
-        for q = 1:length(yEyePos)
-            
+        %for q = 1:length(yEyePos)
+        q=p; 
+        
             realstimimage=realstimimage+EyePosDist{FrameNum}(xEyePos(p),yEyePos(q))*OriginalShifted{xEyePos(p)}{yEyePos(q)};
             
-        end
+        %end
     end
     
     
-    realstimimage=realstimimage./sum(sum(EyePosDist{FrameNum}));
+    realstimimage=realstimimage./sum(sum(EyePosDist{FrameNum})); % check dim
     
     stim.images(:,FrameNum)=realstimimage(inStimWindow);
     
