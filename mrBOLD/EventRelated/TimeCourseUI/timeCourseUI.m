@@ -87,6 +87,9 @@ if nargin >= 1,  openFigFlag = 1;
 else             openFigFlag = 0;
 end
 
+%Force GLM Datatype
+%dt=2;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Open the figure if needed %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%

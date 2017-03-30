@@ -96,17 +96,17 @@ disp(vAnatFile);
 % check if alignment exists and give option to use this as a
 % starting point allowing refinements of an existing alignment
 % only do this if no initXFM is defined
-useStartingEstimate = 0;
-if notDefined('initXFM'),
-    if isfield(mrSESSION,'alignment'),
-        bn = questdlg(['mrSESSION.alignment exists. Do you want to to use ' ...
-            'it as a starting estimate?'],...
-            'starting estimate','Yes','No','No');
-        if strmatch(bn,'Yes'),
-            useStartingEstimate = 1;
-        end;
-    end;
-end;
+useStartingEstimate = 1;
+% if notDefined('initXFM'),
+%     if isfield(mrSESSION,'alignment'),
+%         bn = questdlg(['mrSESSION.alignment exists. Do you want to to use ' ...
+%             'it as a starting estimate?'],...
+%             'starting estimate','Yes','No','No');
+%         if strmatch(bn,'Yes'),
+%             useStartingEstimate = 1;
+%         end;
+%     end;
+% end;
 
 [v.img,v.mm] = readVolAnat(vAnatFile);
 sz = size(v.img);
