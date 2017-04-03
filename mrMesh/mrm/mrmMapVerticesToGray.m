@@ -6,6 +6,7 @@ function [v2gMap, sqDist] = mrmMapVerticesToGray(vertexCoords, grayNodes, mmPerV
 % To see the coordinates of the gray matter node (or nodes) nearest to  
 % mesh vertex I, we can use:
 %    
+
 %      nearestNodeCoords = grayNodes(1:3, v2gMap(:,I))
 %
 %
@@ -179,13 +180,13 @@ if(mapToAllLayers && exist('grayEdges','var') && ~isempty(grayEdges))
                 neighbors(grayNodes(6,neighbors) < iLayer - 1) = [];
                 nextNeighbors = [];
                 neighborsDown = [];
-                iter = 0; % debugging
+                %iter = 0; % debugging
                 while isempty(neighborsDown) && ~isequal(neighbors,nextNeighbors)
-                    iter = iter+1; %debugging
-                    if iter> 1000,
-                       disp foo
-                       break
-                    end
+                    %iter = iter+1; %debugging
+                    %if iter> 1000,
+                    %   disp foo
+                    %   break
+                    %end
                     neighbors = union(nextNeighbors,neighbors);
                     nextNeighbors = [];
                     for iNeighbor = 1:length(neighbors)
