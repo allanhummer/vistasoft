@@ -180,13 +180,13 @@ if(mapToAllLayers && exist('grayEdges','var') && ~isempty(grayEdges))
                 neighbors(grayNodes(6,neighbors) < iLayer - 1) = [];
                 nextNeighbors = [];
                 neighborsDown = [];
-                %iter = 0; % debugging
+                iter = 0; % debugging
                 while isempty(neighborsDown) && ~isequal(neighbors,nextNeighbors)
-                    %iter = iter+1; %debugging
-                    %if iter> 1000,
+                    iter = iter+1; %debugging
+                    if iter> 1000,
                     %   disp foo
-                    %   break
-                    %end
+                        break
+                    end
                     neighbors = union(nextNeighbors,neighbors);
                     nextNeighbors = [];
                     for iNeighbor = 1:length(neighbors)
