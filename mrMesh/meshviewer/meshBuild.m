@@ -79,7 +79,8 @@ newMesh = meshSet(newMesh,'nGrayLayers',numGrayLayers);
 mrvWaitbar(0.9,wbar,sprintf('meshBuild: Saving mesh file %s',meshGet(newMesh,'name')));
 
 % Save mesh file
-[newMesh newMesh.path] = mrmWriteMeshFile(newMesh);
+%[newMesh newMesh.path] = mrmWriteMeshFile(newMesh);
+newMesh.path='';
 
 mrvWaitbar(1,wbar,sprintf('meshBuild: Done')); 
 pause(0.5);
@@ -161,23 +162,25 @@ defAns = {meshName,...
         % num2str(restrictVOI)};
         };
 
-resp = inputdlg(prompt, 'meshBuild Parameters', 1, defAns);
+% Disabled prompt
+disp(['[',mfilename,'] numGrayLayers = 0'])
+%resp = inputdlg(prompt, 'meshBuild Parameters', 1, defAns);
 
-if(~isempty(resp))
-    meshName = resp{1};
-    numGrayLayers = str2num(resp{2});
-    hemiNum = str2num(resp{3});
+%if(~isempty(resp))
+%    meshName = resp{1};
+%    numGrayLayers = str2num(resp{2});
+%    hemiNum = str2num(resp{3});
     % alpha = str2num(resp{4});
     % relaxIterations = round(str2num(resp{5})*160);  % Arbitrary choice, scales iters [0,160]
     % restrictVOI = str2num(resp{6});
-else
-    meshName = [];
-    numGrayLayers = [];
-    hemiNum = [];
+%else
+%    meshName = [];
+%    numGrayLayers = [];
+%    hemiNum = [];
     % alpha = [];
     % relaxIterations = [];  % Arbitrary choice, scales iters [0,160]
     % restrictVOI = [];
-end
+%end
 
 return;
 
@@ -192,7 +195,10 @@ if ieNotDefined('vw'), error('You must send in a volume vw'); end
 if ieNotDefined('hemiName'), error('You must define right,left or both'); end
 if ieNotDefined('numGrayLayers'), numGrayLayers = 0; end
 
-classFile = verifyClassFile(vw,hemiName);
+%Disabled prompt
+%classFile = verifyClassFile(vw,hemiName);
+classFile =  viewGet(vw,'classFileName',hemiName);
+
 if isempty(classFile),
     close(wbar); newMeshNum = -1;
     voxels = [];
