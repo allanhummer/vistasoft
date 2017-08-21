@@ -165,8 +165,10 @@ end
 
 % map the replacement values
 invals  = [3 2 41 42];
-outvals = [5 3  4  6];
-labels  = {'L Gray', 'L White', 'R White', 'R Gray'};
+%outvals = [5 3  4  6];
+%labels  = {'L Gray', 'L White', 'R White', 'R Gray'};
+outvals = [0 3  4  0];
+labels  = {'', 'L White', 'R White', ''};
 
 fprintf('\n\n****************\nConverting voxels....\n\n');
 for ii = 1:4;
