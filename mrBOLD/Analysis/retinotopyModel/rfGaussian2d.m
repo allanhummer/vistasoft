@@ -1,4 +1,4 @@
-function RF = rfGaussian2d(X,Y,sigmaMajor,sigmaMinor,theta, x0,y0)
+function RF = rfGaussian2d(X,Y,sigmaMajor,sigmaMinor,theta, x0,y0, NormalizeFlag)
 % rfGaussian2d - Create a two dimensional Gaussian receptive field
 %
 %  RF = rfGaussian2d(X,Y,sigmaMajor,sigmaMinor,theta,x0,y0);
@@ -22,7 +22,7 @@ function RF = rfGaussian2d(X,Y,sigmaMajor,sigmaMinor,theta, x0,y0)
 %    [X,Y] = meshgrid(x,y);
 %    sigma = 5;  % Deg
 %    rf = rfGaussian2d(X,Y,sigma);
-% 
+%
 
 % Programming notes:
 %  Maybe we should always make sure we use an odd number of samples and
@@ -33,26 +33,27 @@ function RF = rfGaussian2d(X,Y,sigmaMajor,sigmaMinor,theta, x0,y0)
 % is the slowest part in rmMain together with rfMakePrediction),   so
 % if it seems that all arguments are given just skip it.
 % ras 08/06: well, we can do what Bob does: not call it at all anyway.
-if nargin ~= 7,
+if nargin ~= 8,
     if ~exist('X', 'var') || isempty(X),
         error('Must define X grid');
     end;
-
+    
     if ~exist('Y', 'var') || isempty(Y),
         error('Must define Y grid');
     end;
-
+    
     if ~exist ('sigmaMajor', 'var') || isempty(sigmaMajor),
         error('Must scale on major axis');
     end;
-
+    
     if ~exist ('sigmaMinor', 'var') || isempty(sigmaMinor),
         sigmaMinor = sigmaMajor;
     end;
-
+    
     if ~exist ('theta', 'var') || isempty(theta), theta = false; end;
     if ~exist ('x0', 'var') || isempty(x0),       x0 = 0;    end;
     if ~exist ('y0', 'var') || isempty(y0),       y0 = 0;    end;
+    if ~exist ('NormalizeFlag', 'var') || isempty(NormalizeFlag),       NormalizeFlag = 0;    end;
 end;
 
 
@@ -62,17 +63,17 @@ end;
 if numel(sigmaMajor)~=1,
     sz1 = numel(X);
     sz2 = numel(sigmaMajor);
-
+    
     X   = repmat(X(:),1,sz2);
     Y   = repmat(Y(:),1,sz2);
-
+    
     sigmaMajor = repmat(sigmaMajor(:)',sz1,1);
     sigmaMinor = repmat(sigmaMinor(:)',sz1,1);
-
+    
     if any(theta(:)),
         theta = repmat(theta(:)',sz1,1);
     end;
-
+    
     x0 = repmat(x0(:)',sz1,1);
     y0 = repmat(y0(:)',sz1,1);
 end;
@@ -92,13 +93,16 @@ if any(theta(:)),
 end;
 
 % make gaussian on current grid
+
 RF = exp( -.5 * ((Y ./ sigmaMajor).^2 + (X ./ sigmaMinor).^2));
 
-% Normalize the Gaussian.
-% The idea is that if you stimulate the entire RF you will
-% always get the same activation, independent of the RF parameters.
-% RF = RF ./ (sigmaMajor.*2.*pi.*sigmaMinor);
-% Decided not to do this. The fitting will deal with this.
-% Thus amplitude will always be the same.
+if NormalizeFlag
+    % Normalize the Gaussian.
+    % The idea is that if you stimulate the entire RF you will
+    % always get the same activation, independent of the RF parameters.
+    RF = RF ./ (sigmaMajor.*2.*pi.*sigmaMinor);
+    % Decided not to do this. The fitting will deal with this.
+    % Thus amplitude will always be the same.
+end
 
 return;

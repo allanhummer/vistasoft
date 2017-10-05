@@ -172,7 +172,7 @@ if(forceSave)
     ipIm = makeMontage(ipVol);
     ipIm(ipIm<0)=0;ipIm(ipIm>1)=1;
     ipIm = cat(3,ipIm,volIm,volIm);
-    imwrite(ipIm, fullfile(sessionDir,'align.png'));
+    imwrite(single(ipIm), fullfile(sessionDir,'align.png'));
     % just save it to existing mrSESSION
     mrSESSION.alignment = alignment;
     saveSession;

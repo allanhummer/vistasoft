@@ -44,21 +44,22 @@ vfc.prf_size = true;
 vfc.fieldRange = min(30, vw.rm.retinotopyParams.analysis.maxRF);
 vfc.method = 'max';         
 vfc.newfig = true;                      
-vfc.nboot = 50;                          
+vfc.nboot = 0;%50;                          
 vfc.normalizeRange = true;              
-vfc.smoothSigma = true;                
+vfc.smoothSigma = false;%true;                
 vfc.cothresh = viewGet(vw, 'co thresh');         
 vfc.eccthresh = [0 1.5*vfc.fieldRange]; 
 vfc.nSamples = 128;            
 vfc.meanThresh = 0;
 vfc.weight = 'fixed';  
 vfc.weightBeta = 0;
-vfc.cmap = 'jet';						
+vfc.cmap = 'hot';%'jet';						
 vfc.clipn = 'fixed';                    
 vfc.threshByCoh = false;                
 vfc.addCenters = true;                 
 vfc.verbose = prefsVerboseCheck;
 vfc.dualVEthresh = 0;
+vfc.normalizegaussian = 0;
 
 compVolume = false;
 
@@ -87,6 +88,7 @@ else
             case 'addcenters',      vfc.addCenters      = varargin{ii+1}; % boolean   
             case 'vfc.verbose',     vfc.verbose         = varargin{ii+1}; % boolean   
             case 'dualvethresh',    vfc.dualVEthresh    = varargin{ii+1}; % boolean
+            case 'normalizegaussian',    vfc.normalizegaussian    = varargin{ii+1}; % boolean
         end
     end
 end
@@ -136,7 +138,7 @@ clear rmModel
 % long time to fix them. So, I'm keeping the y-flip correction, but making
 % it explicit here. When the code is fixed and most models saved on disk
 % are correct, we can remove this. 
-% y0 = -y0;
+y0 = -y0;
 
 % ok. I think it is time to remove. I suggest putting in a flag to flip the
 % y-dimension if requested, but otherwise not to.
@@ -352,12 +354,14 @@ fprintf(1,'[%s]:Making %d pRFs:...', mfilename, n);
 drawnow;
 for n=1:numel(s)-1,
     % make rfs
+    
     rf   = rfGaussian2d(X(:), Y(:),...
-						subSize1(s(n):s(n+1)-1), ...
-						subSize2(s(n):s(n+1)-1), ...
-						subTheta(s(n):s(n+1)-1), ...
-						subX(s(n):s(n+1)-1), ...
-						subY(s(n):s(n+1)-1));
+        subSize1(s(n):s(n+1)-1), ...
+        subSize2(s(n):s(n+1)-1), ...
+        subTheta(s(n):s(n+1)-1), ...
+        subX(s(n):s(n+1)-1), ...
+        subY(s(n):s(n+1)-1),vfc.normalizegaussian);
+    
     all_models(:,s(n):s(n+1)-1) = rf;
 end;
 clear n s rf pred;
@@ -506,6 +510,9 @@ else
             error('Unknown method %s',vfc.method)
     end
 end
+
+% convert to logarithmic data
+%RFcov=log(RFcov);
 
 % convert 1D to 2D
 RFcov = reshape( RFcov, [1 1] .* sqrt(numel(RFcov)) );
